@@ -36,6 +36,17 @@ The fix isn't "more tests." It's guardrails that satisfy three conditions at
 once, plus types that make the impossible state unrepresentable in the first
 place.
 
+**Thesis: a lit factory is not the opposite of a dark one.** It is a dark
+factory with the verification neck measured and enforced. Every loop, every
+type, every check is governed by the same constraint — backpressure: you can
+only hand a loop as much autonomy as you can cheaply and reliably verify, not
+one inch more. Osmani names the debt that accrues when you ignore that
+constraint (comprehension debt). Horthy shows the training limit that makes it
+unavoidable (months to price, seconds to train). Hipp and King show what
+verification actually costs when it is honest (MC/DC and a discriminant that
+makes the wrong state impossible). The rest of this essay is that constraint
+applied, piece by piece, until you have a prototype you can copy.
+
 ## Loop, harness, factory
 
 Addy Osmani's stack, from his post [Software Factories, Light and
@@ -487,6 +498,52 @@ program that computes the same thing. For types, that means the comment
   maintenance cost that looks nothing like a single-maintainer JavaScript
   project with weekly interface churn. Use them as heuristics with a stated
   cost attached.
+
+## A prototype you can copy this week
+
+This is the roadmap the essay argues for, in the order you would actually do
+it. It is one belief, one check, one placement, and one measurement — not a
+platform to adopt. Each step clears backpressure before the next widens the
+mouth.
+
+**1. Pick one belief that already bit you.** Write it as one sentence that
+names the failure, not the hope. "`--unshare-net` was emitted on advisor
+spawns and blocked the network" is a belief. `19 allowed tags appeared in
+history despite the trailer ban` is a belief. If you can't point to a real
+incident, stop. There is no guardrail to write yet.
+
+**2. Write the cheapest check that can fail for that belief and name which
+belief was wrong.** If the belief is syntactic (a shape in the code), write an
+`ast-grep` rule that fails on the parent commit and stays silent on the fix and
+on legitimate near-matches (`skip` vs `resolve` on symlinks is the fourth
+check). If the belief is `either a or b`, write the discriminated union
+`| {kind: '…', ...}` and let the compiler be the check. In both cases the
+output has to say which belief was wrong, not just that something failed.
+
+**3. Put it where it runs without being asked, at the smallest scope that
+actually covers the belief.** A trajectory string goes in `pre-commit`
+(`rg -c '^Claude-Session:'`). A structural invariant goes in the type system
+(`kind` discriminant, exhaustive `switch`). A network shape goes in `test:unit`
+or a build step that already spawns `bwrap`. Don't stand up a new language
+server to do what `tsc` in CI already does. Use `// ast-grep-ignore:
+no-optional-bag-for-exclusive-states -- bag: independent` to keep a product
+that is genuinely independent, and treat that annotation as data.
+
+**4. Watch the false-positive rate for two weeks, then decide.** If the check
+fires only on real incidents, keep it and consider widening its scope (the
+env hermeticity assert widened from `env -u FOO` one name at a time to a
+generic `startsWith("TASKFERRY_")` after eight leaked-env failures). If it
+needs a bypass on most files it touches, demote it to a suggestion or drop it.
+If Pulumi's pattern applies — the generator can see its own acceptance
+scenarios — add the Isolation Wall (holdout scenarios the generator can't
+read) before promoting anything to a hard gate. Stripe's `1,300+ PRs/week at
+$1T, all human-reviewed` is the reminder that keeping review upstream doesn't
+cap throughput the way a dark pitch assumes.
+
+At the end of those four moves you have a lit factory in miniature: one loop
+with a measured neck, one type that makes the wrong state impossible, and one
+measurement that tells you whether to keep it. Add the next belief only after
+that one has earned the dark on its own.
 
 ## References
 

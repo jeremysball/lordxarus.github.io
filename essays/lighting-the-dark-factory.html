@@ -54,6 +54,16 @@ first while quietly losing the second.</p>
 <p>The fix isn't "more tests." It's guardrails that satisfy three conditions at
 once, plus types that make the impossible state unrepresentable in the first
 place.</p>
+<p><strong>Thesis: a lit factory is not the opposite of a dark one.</strong> It is a dark
+factory with the verification neck measured and enforced. Every loop, every
+type, every check is governed by the same constraint — backpressure: you can
+only hand a loop as much autonomy as you can cheaply and reliably verify, not
+one inch more. Osmani names the debt that accrues when you ignore that
+constraint (comprehension debt). Horthy shows the training limit that makes it
+unavoidable (months to price, seconds to train). Hipp and King show what
+verification actually costs when it is honest (MC/DC and a discriminant that
+makes the wrong state impossible). The rest of this essay is that constraint
+applied, piece by piece, until you have a prototype you can copy.</p>
 <h2 id="loop-harness-factory">Loop, harness, factory</h2>
 <p>Addy Osmani's stack, from his post <a href="https://addyosmani.com/blog/software-factories/">Software Factories, Light and
 Dark</a>, gives the pieces
@@ -468,6 +478,45 @@ program that computes the same thing. For types, that means the comment
   project with weekly interface churn. Use them as heuristics with a stated
   cost attached.</li>
 </ul>
+<h2 id="a-prototype-you-can-copy-this-week">A prototype you can copy this week</h2>
+<p>This is the roadmap the essay argues for, in the order you would actually do
+it. It is one belief, one check, one placement, and one measurement — not a
+platform to adopt. Each step clears backpressure before the next widens the
+mouth.</p>
+<p><strong>1. Pick one belief that already bit you.</strong> Write it as one sentence that
+names the failure, not the hope. "<code>--unshare-net</code> was emitted on advisor
+spawns and blocked the network" is a belief. <code>19 allowed tags appeared in
+history despite the trailer ban</code> is a belief. If you can't point to a real
+incident, stop. There is no guardrail to write yet.</p>
+<p><strong>2. Write the cheapest check that can fail for that belief and name which
+belief was wrong.</strong> If the belief is syntactic (a shape in the code), write an
+<code>ast-grep</code> rule that fails on the parent commit and stays silent on the fix and
+on legitimate near-matches (<code>skip</code> vs <code>resolve</code> on symlinks is the fourth
+check). If the belief is <code>either a or b</code>, write the discriminated union
+<code>| {kind: '…', ...}</code> and let the compiler be the check. In both cases the
+output has to say which belief was wrong, not just that something failed.</p>
+<p><strong>3. Put it where it runs without being asked, at the smallest scope that
+actually covers the belief.</strong> A trajectory string goes in <code>pre-commit</code>
+(<code>rg -c '^Claude-Session:'</code>). A structural invariant goes in the type system
+(<code>kind</code> discriminant, exhaustive <code>switch</code>). A network shape goes in <code>test:unit</code>
+or a build step that already spawns <code>bwrap</code>. Don't stand up a new language
+server to do what <code>tsc</code> in CI already does. Use <code>// ast-grep-ignore:
+no-optional-bag-for-exclusive-states -- bag: independent</code> to keep a product
+that is genuinely independent, and treat that annotation as data.</p>
+<p><strong>4. Watch the false-positive rate for two weeks, then decide.</strong> If the check
+fires only on real incidents, keep it and consider widening its scope (the
+env hermeticity assert widened from <code>env -u FOO</code> one name at a time to a
+generic <code>startsWith("TASKFERRY_")</code> after eight leaked-env failures). If it
+needs a bypass on most files it touches, demote it to a suggestion or drop it.
+If Pulumi's pattern applies — the generator can see its own acceptance
+scenarios — add the Isolation Wall (holdout scenarios the generator can't
+read) before promoting anything to a hard gate. Stripe's <code>1,300+ PRs/week at
+$1T, all human-reviewed</code> is the reminder that keeping review upstream doesn't
+cap throughput the way a dark pitch assumes.</p>
+<p>At the end of those four moves you have a lit factory in miniature: one loop
+with a measured neck, one type that makes the wrong state impossible, and one
+measurement that tells you whether to keep it. Add the next belief only after
+that one has earned the dark on its own.</p>
 <h2 id="references">References</h2>
 <ul>
 <li>Addy Osmani, <a href="https://addyosmani.com/blog/software-factories/">"Software Factories, Light and
