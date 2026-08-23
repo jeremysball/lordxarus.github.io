@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeremy Ball · Notes — Wanted</title>
-<meta name="description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
-<link rel="canonical" href="https://jeremyball.me/">
+<title>Jeremy Ball · About</title>
+<meta name="description" content="Jeremy Ball — about, contact, and links.">
+<link rel="canonical" href="https://jeremyball.me/about.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Jeremy Ball">
-<meta property="og:description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
-<meta property="og:url" content="https://jeremyball.me/">
+<meta property="og:title" content="Jeremy Ball · About">
+<meta property="og:description" content="Jeremy Ball — about, contact, and links.">
+<meta property="og:url" content="https://jeremyball.me/about.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Jeremy Ball">
-<meta name="twitter:description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
+<meta name="twitter:title" content="Jeremy Ball · About">
+<meta name="twitter:description" content="Jeremy Ball — about, contact, and links.">
 <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96">
 <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
 <link rel="shortcut icon" href="favicon/favicon.ico">
@@ -100,22 +100,6 @@
     padding:4px 8px;
     border-bottom-color:#0A0A0A;
   }
-  .masthead-links{
-    display:flex;
-    gap:14px;
-    margin-top:14px;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.06em;
-  }
-  .masthead-links a{
-    text-decoration:none;
-    border-bottom:2px solid #0A0A0A;
-    padding-bottom:2px;
-  }
-  .masthead-links a:hover{background:#0A0A0A; color:#FFFBF0}
-
-  /* board — flat kraft-like, notices are pinned individually */
   .board{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -132,13 +116,11 @@
     flex-direction:column;
     gap:10px;
   }
-  .notice:nth-child(5){grid-column:span 2; max-width:620px; margin:0 auto; width:100%}
-
+  .notice.wide{grid-column:span 2; max-width:720px; margin:0 auto; width:100%}
   .notice-date{
     font-size:11px; font-weight:700; letter-spacing:0.06em;
     color:#6B625C;
   }
-
   .notice-title{
     margin:0;
     font-size:16.5px;
@@ -155,9 +137,17 @@
     color:#1A1A1A;
   }
   .notice-desc code{font-size:12px; font-weight:700; border:2px solid #0A0A0A; padding:1px 5px; background:#FFF1DC}
+  .link-list{
+    margin:0; padding:0; list-style:none;
+    display:flex; flex-direction:column; gap:8px;
+    font-size:13px; line-height:1.5;
+  }
+  .link-list a{text-decoration:none; box-shadow:inset 0 -2px 0 #0A0A0A}
+  .link-list a:hover{background:#0A0A0A; color:#FFFBF0}
+  .link-list .dim{color:#6B625C; font-size:11px; letter-spacing:0.04em}
   @media(max-width:760px){
     .board{grid-template-columns:1fr}
-    .notice:nth-child(5){grid-column:span 1; max-width:none}
+    .notice.wide{grid-column:span 1; max-width:none}
     .masthead{padding-bottom:18px}
     .masthead-name{font-size:28px}
     .notice{box-shadow:6px 6px 0 #0A0A0A}
@@ -172,42 +162,40 @@
     <header class="masthead" aria-label="Masthead">
       <h1 class="masthead-title">
         <span class="masthead-name">Jeremy Ball</span>
-        <span class="masthead-meta" aria-label="Section: Notes">
+        <span class="masthead-meta" aria-label="Section: About">
           <span class="masthead-rule" aria-hidden="true"></span>
-          <span class="masthead-section">Notes</span>
+          <span class="masthead-section">About</span>
         </span>
       </h1>
-      <p class="sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.</p>
+      <p class="sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
       <nav class="site-nav" aria-label="Site">
-        <a href="/" aria-current="page">Notes</a>
-        <a href="/about.html">About</a>
+        <a href="/">Notes</a>
+        <a href="/about.html" aria-current="page">About</a>
       </nav>
     </header>
-    <section class="board" aria-label="Pinned notes">
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-08-14">2026-08-14</time></div>
-        <h2 class="notice-title"><a href="#">Lorem ipsum dolor sit amet</a></h2>
-        <p class="notice-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <section class="board" aria-label="About">
+      <article class="notice wide">
+        <div class="notice-date">About</div>
+        <h2 class="notice-title">Lorem ipsum dolor sit amet</h2>
+        <p class="notice-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
       </article>
       <article class="notice">
-        <div class="notice-date"><time datetime="2026-07-29">2026-07-29</time></div>
-        <h2 class="notice-title"><a href="#">Consectetur adipiscing elit</a></h2>
-        <p class="notice-desc">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        <div class="notice-date">Contact</div>
+        <h2 class="notice-title">Lorem ipsum</h2>
+        <ul class="link-list">
+          <li><a href="#">lorem@ipsum.com</a> <span class="dim">— lorem</span></li>
+          <li><a href="#">ipsum.com/lorem</a> <span class="dim">— ipsum</span></li>
+          <li><a href="#">dolor.sit/amet</a> <span class="dim">— dolor</span></li>
+        </ul>
       </article>
       <article class="notice">
-        <div class="notice-date"><time datetime="2026-06-18">2026-06-18</time></div>
-        <h2 class="notice-title"><a href="#">Sed do eiusmod tempor incididunt</a></h2>
-        <p class="notice-desc">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-05-11">2026-05-11</time></div>
-        <h2 class="notice-title"><a href="#">Ut labore et dolore magna</a></h2>
-        <p class="notice-desc">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-04-03">2026-04-03</time></div>
-        <h2 class="notice-title"><a href="#">Incididunt ut labore et dolore</a></h2>
-        <p class="notice-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor <code>lorem ipsum</code> incididunt ut labore et dolore magna aliqua.</p>
+        <div class="notice-date">Links</div>
+        <h2 class="notice-title">Consectetur adipiscing</h2>
+        <ul class="link-list">
+          <li><a href="#">Lorem ipsum dolor</a> <span class="dim">— lorem</span></li>
+          <li><a href="#">Consectetur adipiscing</a> <span class="dim">— ipsum</span></li>
+          <li><a href="#">Sed do eiusmod</a> <span class="dim">— dolor</span></li>
+        </ul>
       </article>
     </section>
   </div>
