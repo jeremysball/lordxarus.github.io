@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Lighting the Dark Factory — Jeremy Ball</title>
+  <title>Lighting the Dark Factory · Jeremy Ball</title>
   <meta name="description" content="Turning a dark software factory lit: guardrails, sum types, and where ast-grep stops and the compiler starts." />
   <link rel="canonical" href="https://jeremyball.me/essays/lighting-the-dark-factory.html" />
   <meta property="og:type" content="article" />
@@ -22,13 +22,13 @@
   <nav><a href="/">← jeremyball.me</a></nav>
   <article>
 <h1 id="lighting-the-dark-factory">Lighting the Dark Factory</h1>
-<!-- TODO: run routing-prose-passes (register: Published, polished — pending
-     confirmation) over this draft before converting to HTML and publishing.
-     Not yet run as of this draft. -->
+<!-- TODO: run routing-prose-passes (register: Published, polished, pending
+ confirmation) over this draft before converting to HTML and publishing.
+ Not yet run as of this draft. -->
 
 <p>A dark factory is not a metaphor for "fast." It's a physical claim borrowed
 from manufacturing. FANUC has run lights-out factories since 2001, Xiaomi
-since 2024 — the lights are off because no human is on the floor. Simon
+since 2024. The lights are off because no human is on the floor. Simon
 Willison's gloss is the cleanest: dark means robots don't need lights. The
 black-box framing is spec in, software out, with no human reading the diff in
 between. A dark software factory is the same move in code. Diffs ship that no
@@ -56,9 +56,9 @@ once, plus types that make the impossible state unrepresentable in the first
 place.</p>
 <p><strong>Thesis: a lit factory is not the opposite of a dark one.</strong> It is a dark
 factory with the verification neck measured and enforced. Every loop, every
-type, every check is governed by the same constraint — backpressure: you can
+type, every check is governed by the same constraint, backpressure (you can
 only hand a loop as much autonomy as you can cheaply and reliably verify, not
-one inch more. Osmani names the debt that accrues when you ignore that
+one inch more). Osmani names the debt that accrues when you ignore that
 constraint (comprehension debt). Horthy shows the training limit that makes it
 unavoidable (months to price, seconds to train). Hipp and King show what
 verification actually costs when it is honest (MC/DC and a discriminant that
@@ -69,23 +69,23 @@ applied, piece by piece, until you have a prototype you can copy.</p>
 Dark</a>, gives the pieces
 names:</p>
 <ul>
-<li><strong>Loop</strong>: one agent job on repeat — gather context, act, check, repeat
-  until done. The smallest unit. Osmani's own wording: "one agent doing a
-  single job on repeat: gather context, take an action, check the result, and
-  go again until some condition is met."</li>
-<li><strong>Harness</strong>: the walls around the loop — the sandbox, which tools are
-  reachable, memory between runs, whatever defines "done." Osmani: "the
-  sandbox it runs in, the tools it can reach, the memory that survives between
-  runs, and the gates that decide what 'done' means."</li>
+<li><strong>Loop</strong>: one agent job on repeat; gather context, act, check, repeat
+ until done. The smallest unit. Osmani's own wording: "one agent doing a
+ single job on repeat: gather context, take an action, check the result, and
+ go again until some condition is met."</li>
+<li><strong>Harness</strong>: the walls around the loop, the sandbox, which tools are
+ reachable, memory between runs, whatever defines "done." Osmani: "the
+ sandbox it runs in, the tools it can reach, the memory that survives between
+ runs, and the gates that decide what 'done' means."</li>
 <li><strong>Factory</strong>: many harnessed loops fed by a queue, drained through a review
-  gate into production, with humans owning the outer loop. Osmani: "many
-  harnessed loops running at once, fed by a queue of work and drained through
-  a review gate into production, with humans owning the whole thing from above."</li>
+ gate into production, with humans owning the outer loop. Osmani: "many
+ harnessed loops running at once, fed by a queue of work and drained through
+ a review gate into production, with humans owning the whole thing from above."</li>
 </ul>
 <p>A dark factory moves all judgment out of that outer loop. A lit one moves
-judgment upstream instead — into product, design, and architecture decisions
-made before the loop starts, plus review wherever a wrong answer is
-expensive. Osmani's phrase for the cost that accrues while you're not looking
+judgment upstream instead, into product, design, and architecture decisions
+made before the loop starts (plus review wherever a wrong answer is
+expensive). Osmani's phrase for the cost that accrues while you're not looking
 is <strong>comprehension debt</strong>: "the widening gap between how much code exists and
 how much any human still understands." His line on what a dark factory does
 with it is the thesis of this essay in one sentence: "it takes it on as fast
@@ -97,38 +97,38 @@ harness or RL reward to close the loop on. In his words: "verifying code
 quality and maintainability is orders of magnitude harder than [checking]
 the code runs and the test passes" and "the cost function of bad architecture
 is measured in weeks, months, maybe even years." Coding models train via RL
-against a binary reward — did the patch pass the held-out test — so nothing
+against a binary reward: did the patch pass the held-out test; so nothing
 in training ever penalizes eroding architecture. He ran his experiment
 lights-off starting July 2025; by his account the agents "struggle after maybe
 three to six months." His prescription was to turn the lights back on: "we're
-going to put code review back... you're still reading everything and you're
+going to put code review back... You're still reading everything and you're
 still owning the code." He also names the missing middle layer that makes
-review tractable again — <strong>program design</strong>: call-stack trees, file
+review tractable again, <strong>program design</strong>: call-stack trees, file
 structures, and type signatures, sitting between system architecture and the
 diff itself. "People assume once you get the architecture right, the model can
 just cook. But we often look into the types and the method signatures, the
 program layout and the call stacks."</p>
 <p>Willison's Five Levels gives the same stack a different altitude: Level 5 is
 "robots don't need lights," a black box from spec to software. StrongDM tried
-to live there — three engineers, no human code review, <code>$1,000/day</code> each in
-tokens, running at what they call Level 5 — and their agents found the gap in
+to live there. Three engineers, no human code review, <code>$1,000/day</code> each in
+tokens, running at what they call Level 5, and their agents found the gap in
 the factory's own scoring: a function that simply <code>return true</code>s, useless but
 passing their "Probabilistic Satisfaction" trajectory checks. That's Goodhart's
 Law inside the factory: a check that measures a proxy instead of the thing it
 means to guarantee will be gamed. Pulumi's answer to the same problem is
-architectural: the <strong>Isolation Wall</strong> — "the generator never sees the
+architectural: the <strong>Isolation Wall</strong>; "the generator never sees the
 acceptance scenarios. A separate evaluator does, and it judges the generator's
 output against scenarios the generator could not have memorized." If the
 generator can read its own test, gaming it is a matter of time. Stripe is the
 counterweight on throughput: 1,300+ PRs a week at <code>$1T</code> in annual volume, with
-every PR still human-reviewed — "all changes are human-reviewed but contain no
+every PR still human-reviewed, "all changes are human-reviewed but contain no
 human-written code." Light doesn't cap throughput the way the dark pitch
 assumes.</p>
 <h2 id="backpressure-is-the-decision">Backpressure is the decision</h2>
 <p>Osmani's framing is the useful complement to Horthy's result, not a rebuttal of
 it. His post is about <em>where</em> along the pipeline a loop earns the right to
 run dark, not about whether dark factories work in general.</p>
-<p>The image is a funnel. Wide mouth, narrow neck. The mouth is generation —
+<p>The image is a funnel. Wide mouth, narrow neck. The mouth is generation:
 cheap, parallel, fast. The neck is verification. Backpressure is the
 constraint that decides how much autonomy you can hand a loop: you can only
 hand it as much as you can cheaply and reliably verify, not one inch more.
@@ -139,11 +139,11 @@ Osmani states as four parts, plus a fifth from the companion Loop Engineering
 note on loop length:</p>
 <ol>
 <li>The check is <strong>cheap</strong> to run</li>
-<li>It is <strong>high-frequency</strong> — it runs on every diff, not once a quarter</li>
-<li>It is <strong>hard to fake</strong> — the green/red verdict isn't subjective judgment</li>
+<li>It is <strong>high-frequency</strong>. It runs on every diff, not once a quarter</li>
+<li>It is <strong>hard to fake</strong>: the green/red verdict isn't subjective judgment</li>
 <li>Results are <strong>immediate</strong> and <strong>don't drift</strong> over time</li>
-<li>The loop stays <strong>short</strong> — 3 to 10 steps before losing coherence; past 20,
-   Osmani notes, you lose the thread</li>
+<li>The loop stays <strong>short</strong>; 3 to 10 steps before losing coherence; past 20,
+ Osmani notes, you lose the thread</li>
 </ol>
 <p>Fail any one and the right move is to keep it lit (human-reviewed) or not
 wire it in at all. This is the same gate the guardrail tests below restate in
@@ -151,40 +151,40 @@ different words. Short loops earn the dark. Sprawling ones hide mistakes in
 the corners.</p>
 <h3 id="when-to-use-it-when-to-keep-it-lit">When to use it, when to keep it lit</h3>
 <p>This is the part the first draft cut off before the decision. Use the two
-gates together — the three guardrail tests (§ next) and Osmani's five-part
+gates together, the three guardrail tests (§ next) and Osmani's five-part
 threshold above. A candidate has to clear both to be wired in. That keeps the
 choice from collapsing into "automate what we can" or "keep everything lit."</p>
 <p><strong>When a guardrail earns the dark:</strong></p>
 <ul>
-<li>Review is the only gate and it is saturated — backpressure is building
-  (Osmani's funnel: wide generation mouth, narrow verification neck)</li>
+<li>Review is the only gate and it is saturated. Backpressure is building
+ (Osmani's funnel: wide generation mouth, narrow verification neck)</li>
 <li>A type carries two <code>?</code> members where exactly one should exist
-  (<code>{a?: string, b?: string}</code>) — the two-layer fix below is cheap, immediate,
-  and hard to fake</li>
+ (<code>{a?: string, b?: string}</code>): the two-layer fix below is cheap, immediate,
+ and hard to fake</li>
 <li>Repeated fix shapes (<code>fix:</code> was 39% of history in taskferry) suggest a
-  convention that never got encoded, and the shape is stable and syntactic
-  enough to survive the four-way mining test below</li>
+ convention that never got encoded, and the shape is stable and syntactic
+ enough to survive the four-way mining test below</li>
 <li>A check already exists as prose (19 <code>Claude-Session:</code> trailers forbidden in
-  writing, zero times checked mechanically) — near-zero false-positive risk</li>
+ writing, zero times checked mechanically); near-zero false-positive risk</li>
 </ul>
 <p><strong>When to keep it lit:</strong></p>
 <ul>
-<li>Pure research, design docs, or incident writeups with no command to run — a
-  required <code>## Verification</code> section would reject good work (fails guardrail
-  test 3)</li>
+<li>Pure research, design docs, or incident writeups with no command to run, a
+ required <code>## Verification</code> section would reject good work (fails guardrail
+ test 3)</li>
 <li>Low-volume, high-judgment work where the cheapest check is human judgment
-  kept upstream (architecture / program design review before the loop starts).
-  Moving the lights upstream beats adding a gate after</li>
+ kept upstream (architecture / program design review before the loop starts).
+ Moving the lights upstream beats adding a gate after</li>
 <li>When the check is not cheap, high-frequency, or hard to fake. If it is
-  flaky, manual, or encodes stale policy (symlink <code>skip</code> vs <code>resolve</code> drift
-  between <code>5a31a7c → bd4284a</code>), it fails the backpressure threshold</li>
+ flaky, manual, or encodes stale policy (symlink <code>skip</code> vs <code>resolve</code> drift
+ between <code>5a31a7c → bd4284a</code>), it fails the backpressure threshold</li>
 <li>When the code shape is genuinely open-ended. "Every fix is a missed
-  convention" is a useful heuristic and a poor rule: it surfaces real
-  conventions and it also misfires where the failure was not a code shape
-  (saturated CI concurrency, provider hangs, timing-sensitive watchdogs)</li>
+ convention" is a useful heuristic and a poor rule: it surfaces real
+ conventions and it also misfires where the failure was not a code shape
+ (saturated CI concurrency, provider hangs, timing-sensitive watchdogs)</li>
 <li>For sum/product types: independent optionals (<code>{title?: string,
-  description?: string}</code>) are a product — both may be absent, either may be
-  present — and forcing them into a union would be wrong</li>
+ description?: string}</code>) are a product. Both may be absent, either may be
+ present: and forcing them into a union would be wrong</li>
 </ul>
 <p>Horthy's four-phase alternative to lights-off is the same idea at a higher
 altitude, before any loop starts: Product Review, System Architecture, Program
@@ -197,32 +197,32 @@ where it is cheap, rather than paying for it downstream as rework months later.<
 just one or two:</p>
 <ol>
 <li><strong>It runs without being asked.</strong> A rule someone has to remember to apply
-   is a policy, not a guardrail.</li>
+ is a policy, not a guardrail.</li>
 <li><strong>It has a failure mode.</strong> If no observation could ever make it fire, it's
-   decoration, not a check.</li>
+ decoration, not a check.</li>
 <li><strong>It names which belief was wrong.</strong> "Build failed" doesn't tell you
-   anything. "<code>--unshare-net</code> got emitted on advisor spawns, network's
-   blocked" does.</li>
+ anything. "<code>--unshare-net</code> got emitted on advisor spawns, network's
+ blocked" does.</li>
 </ol>
 <p>These are the same as Osmani's threshold, restated as a property of the
 mechanism rather than of the loop. A check that fails (1) is invisible, one
 that fails (2) looks lit while actually being dark, one that fails (3) moves
-the human cost from constant review to occasional forensics — which is worse
+the human cost from constant review to occasional forensics; which is worse
 because it is unpredictable.</p>
 <p>StrongDM's <code>return true</code> incident and Pulumi's Isolation Wall are the same
 principle at the factory level. A scenario check the generator can read is a
-guardrail that fails (2) structurally — it has no failure mode the generator
+guardrail that fails (2) structurally, it has no failure mode the generator
 can't route around. Pulumi's wall (generator never sees acceptance scenarios,
 a separate evaluator judges against holdouts the generator couldn't memorize)
 is what makes the check hard to fake. That is why this essay treats Isolation
 Walls and holdout scenarios as load-bearing guardrail properties, not
 implementation details.</p>
-<h2 id="picking-the-mechanism-ast-grep-vs-the-compiler">Picking the mechanism: ast-grep vs. the compiler</h2>
+<h2 id="picking-the-mechanism-ast-grep-vs-the-compiler">Picking the mechanism: ast-grep vs. The compiler</h2>
 <p>These are two different guardrail mechanisms, and they're not competing for
 the same slot. Which one applies depends on whether the belief you're
 checking is syntactic or semantic.</p>
 <p><strong>Syntactic shape calls for <code>ast-grep</code>.</strong> Things like "this pattern appears
-in the code" — a bag of optional fields that reads as mutually exclusive
+in the code". A bag of optional fields that reads as mutually exclusive
 branches, a banned call shape, a convention mined from a repeated fix (more
 on that below). <code>ast-grep</code> matches on the AST, not on text, so it survives
 reformatting and doesn't misfire on a comment or a string that happens to
@@ -231,7 +231,7 @@ long-running language server to keep alive. That statelessness is most of
 what clears the "runs without being asked" bar at near-zero cost.</p>
 <p><strong>Semantic correctness calls for the real compiler, linter, or type
 checker.</strong> "Does this actually type-check, resolve, or compile" isn't a
-pattern <code>ast-grep</code> can see — it has no symbol table and no cross-file
+pattern <code>ast-grep</code> can see: it has no symbol table and no cross-file
 resolution, no notion of what a type even is. The move here is to parse the
 output of <code>tsc</code>, <code>mypy</code>, or whatever linter the project already runs, rather
 than standing up a stateful LSP client. A live LSP session needs a correctly
@@ -248,10 +248,10 @@ shape varies too much to pin down syntactically, or it fires on false
 positives, because the shape recurs in legitimate code too. A symlink-related
 cluster I ran into (detailed below) is exactly that failure: a rule that
 would have blocked a legitimate change. Running the compiler to catch a
-purely stylistic shape is the mirror-image mistake — expensive overkill for
+purely stylistic shape is the mirror-image mistake; expensive overkill for
 a job an <code>ast-grep</code> rule does in milliseconds.</p>
 <p>Baggs is the caution on the other side of "just run the compiler." A
-benchmark that touches pages kills the mmap <code>2,000×</code> claim — not because mmap
+benchmark that touches pages kills the mmap <code>2,000×</code> claim, not because mmap
 is slow, but because the benchmark measures the wrong thing. A guardrail with
 no failure mode is decoration; a benchmark that measures a proxy is the same
 failure at the measurement layer.</p>
@@ -259,59 +259,59 @@ failure at the measurement layer.</p>
 <p>This list is ordered by cost against the evidence that justifies each one,
 not by how appealing the idea sounds. None of these is automatic, and
 picking one off the list isn't itself a decision about <em>where</em> the mechanism
-belongs — a hook, <code>CLAUDE.md</code>, the tool's own code, or nowhere at all. That
+belongs. A hook, <code>CLAUDE.md</code>, the tool's own code, or nowhere at all. That
 placement question stays open until a guardrail has actually run long enough
 to have a measured false-positive rate. Score each candidate against both
-gates — the three guardrail tests above and Osmani's five-part threshold
+gates: the three guardrail tests above and Osmani's five-part threshold
 (cheap, high-frequency, hard to fake, immediate, doesn't drift, short loop).
 Fail either and keep it lit.</p>
 <ol>
 <li><strong>Real-<code>bwrap</code> network assertion.</strong> Two lines in a file that already
-   spawns <code>bwrap</code>, at a measured cost of 431ms, already gated on capability.
-   This closes a hole that demonstrably shipped. Cheap, high-frequency, hard
-   to fake, immediate. A good candidate for a hook, though worth re-verifying
-   it stays cheap once wired.</li>
-<li><strong>Trailer scanner.</strong> <code>rg -c '^Claude-Session:'</code> over <code>git log</code> — 19
-   violations found the day I wrote this. Trivially mechanical, near-zero
-   false-positive risk, since the string it's matching is unambiguous. Cheap,
-   immediate, doesn't drift.</li>
+ spawns <code>bwrap</code>, at a measured cost of 431ms, already gated on capability.
+ This closes a hole that demonstrably shipped. Cheap, high-frequency, hard
+ to fake, immediate. A good candidate for a hook, though worth re-verifying
+ it stays cheap once wired.</li>
+<li><strong>Trailer scanner.</strong> <code>rg -c '^Claude-Session:'</code> over <code>git log</code>; 19
+ violations found the day I wrote this. Trivially mechanical, near-zero
+ false-positive risk, since the string it's matching is unambiguous. Cheap,
+ immediate, doesn't drift.</li>
 <li><strong>Worktree gate.</strong> A twelve-line <code>pre-commit</code> check: compare
-   <code>git rev-parse --git-dir</code> against <code>git rev-parse --git-common-dir</code>, block
-   if they're equal. Verified to be equal in the primary checkout and
-   different in a linked worktree. Cheap, but needs a CI escape hatch, and
-   that escape hatch is itself a knob someone has to decide about deliberately,
-   not a special case to wave through.</li>
+ <code>git rev-parse --git-dir</code> against <code>git rev-parse --git-common-dir</code>, block
+ if they're equal. Verified to be equal in the primary checkout and
+ different in a linked worktree. Cheap, but needs a CI escape hatch, and
+ that escape hatch is itself a knob someone has to decide about deliberately,
+ not a special case to wave through.</li>
 <li><strong>Environment hermeticity.</strong> <code>test:unit</code> must not inherit any
-   <code>TASKFERRY_*</code> variable, current or future. Widening <code>env -u FOO</code> one name
-   at a time is a fix, not a guardrail; the actual guardrail is a generic
-   assert that fails if any environment key starts with <code>TASKFERRY_</code> leaks
-   into the test. This was proved out by eight tests that failed once the
-   environment leaked. Lives inside <code>test:unit</code> itself.</li>
+ <code>TASKFERRY_*</code> variable, current or future. Widening <code>env -u FOO</code> one name
+ at a time is a fix, not a guardrail; the actual guardrail is a generic
+ assert that fails if any environment key starts with <code>TASKFERRY_</code> leaks
+ into the test. This was proved out by eight tests that failed once the
+ environment leaked. Lives inside <code>test:unit</code> itself.</li>
 <li><strong>Asserts.</strong> SQLite is the reference case here: 7,500-plus asserts,
-   MC/DC coverage, a 4x cost that Richard Hipp says was only justified
-   because thousands of micro-optimizations aggregated into a 3x speedup.
-   Hipp is explicit: SQLite is three committers, 50-year design lifespan,
-   hand-authored C, <code>test_case()</code> macros to force bit-mask coverage, fault
-   injection that walks every allocation failure path — "we're not using agents
-   to write code, but we do write our own programs to write code." A 15.5MB,
-   320,000-line coverage report, 100% MC/DC at the machine-code level. That
-   is what "we trust this code because it's been tested, not because someone
-   read it" costs when the stakes are high enough to demand it. For a
-   one-maintainer JavaScript project with weekly interface churn, this stays a
-   hypothesis until at least two concrete internal invariants exist worth
-   asserting. Don't wire in a generic "add asserts" rule on the strength of
-   Hipp's number alone.</li>
+ MC/DC coverage, a 4x cost that Richard Hipp says was only justified
+ because thousands of micro-optimizations aggregated into a 3x speedup.
+ Hipp is explicit: SQLite is three committers, 50-year design lifespan,
+ hand-authored C, <code>test_case()</code> macros to force bit-mask coverage, fault
+ injection that walks every allocation failure path, "we're not using agents
+ to write code, but we do write our own programs to write code." A 15.5MB,
+ 320,000-line coverage report, 100% MC/DC at the machine-code level. That
+ is what "we trust this code because it's been tested, not because someone
+ read it" costs when the stakes are high enough to demand it. For a
+ one-maintainer JavaScript project with weekly interface churn, this stays a
+ hypothesis until at least two concrete internal invariants exist worth
+ asserting. Don't wire in a generic "add asserts" rule on the strength of
+ Hipp's number alone.</li>
 <li><strong>Fix-to-lint mining.</strong> Useful, and dangerous. This only works for
-   repeated, stable, syntactic shapes, and it needs to be validated four
-   separate ways: it has to fire on the buggy parent commit, stay silent on
-   the fix itself, stay silent on legitimate near-matches, and keep holding
-   after the next policy change. A symlink-handling cluster I found (<code>skip
-   symlink</code> becoming <code>resolve symlink</code>) failed that fourth check, and a rule
-   mined from it would have blocked a later, entirely legitimate change.
-   When the artifact itself caused the failure, prefer deleting it over
-   encoding a rule around it — a 47-path explicit test list (two named
-   files plus 45 more) should just become a glob (<code>src/**/*.test.js</code>), not
-   a lint rule that enforces the explicit list forever.</li>
+ repeated, stable, syntactic shapes, and it needs to be validated four
+ separate ways: it has to fire on the buggy parent commit, stay silent on
+ the fix itself, stay silent on legitimate near-matches, and keep holding
+ after the next policy change. A symlink-handling cluster I found (<code>skip
+ symlink</code> becoming <code>resolve symlink</code>) failed that fourth check, and a rule
+ mined from it would have blocked a later, entirely legitimate change.
+ When the artifact itself caused the failure, prefer deleting it over
+ encoding a rule around it. A 47-path explicit test list (two named
+ files plus 45 more) should just become a glob (<code>src/**/*.test.js</code>), not
+ a lint rule that enforces the explicit list forever.</li>
 </ol>
 <h2 id="sum-and-product-types-making-impossible-states-unrepresentable">Sum and product types: making impossible states unrepresentable</h2>
 <p>Alexis King's litmus test for a type is simple: if you can say "this state
@@ -319,9 +319,9 @@ cannot occur," a type should make it unrepresentable, not lean on a comment
 asking the reader to remember.</p>
 <p>Her prerequisite, from her SSW 2026 talk <em>The Unreasonable Effectiveness of
 Constructive Data Modeling</em> (distinct from her older "Parse, Don't Validate"
-essay — same philosophy, sharper restatement), is precise: a language needs
-(1) product types (tuples/structs/records — "combine things together"), (2)
-sum types (Rust enums, TypeScript unions, sealed interfaces — "different
+essay: same philosophy, sharper restatement), is precise: a language needs
+(1) product types (tuples/structs/records; "combine things together"), (2)
+sum types (Rust enums, TypeScript unions, sealed interfaces, "different
 variants"), and (3) exhaustive case analysis where the compiler flags uncovered
 variants. "If you have a language that supports all these things, then all it
 takes to reap all these benefits is a shift in perspective."</p>
@@ -330,7 +330,7 @@ restrictions</strong>. The default mental model is carving subsets out of <code>
 minus what you rule out. King's alternative: a <code>class</code>/<code>record</code> definition
 doesn't restrict an existing universe, it introduces new values that didn't
 exist before. Refinement types that try to subset an existing type ("a natural
-number via a restricted int") are "very, very hard to do... impossible to do"
+number via a restricted int") are "very, very hard to do... Impossible to do"
 in most mainstream type systems. Constructive modeling builds up from nothing
 instead.</p>
 <p>Optional fields on a type are product-shaped when they're independent of
@@ -341,18 +341,18 @@ impossible states on a single type: neither field set, or both set at once.</p>
 // Allows {} and {data, error} at once, both impossible per intent
 type Result = { data?: string; error?: string }
 function handle(r: Result) {
-  if (r.data) use(r.data)          // caller must remember to check r.error too
-  if (r.error) fail(r.error)
+ if (r.data) use(r.data) // caller must remember to check r.error too
+ if (r.error) fail(r.error)
 }
 
 // GOOD: sum type with a discriminant (Alexis King's pattern)
 type Result =
-  | { kind: 'ok', data: string }
-  | { kind: 'err', error: string }
+ | { kind: 'ok', data: string }
+ | { kind: 'err', error: string }
 
 function handle(r: Result) {
-  if (r.kind === 'ok') use(r.data)  // compiler forbids reading .error here
-  else fail(r.error)                // and forbids {} and {both}
+ if (r.kind === 'ok') use(r.data) // compiler forbids reading .error here
+ else fail(r.error) // and forbids {} and {both}
 }
 </code></pre>
 
@@ -363,8 +363,8 @@ type Point = { x: number; y: number }
 
 // Exclusive configuration: a sum of products
 type Config =
-  | { auth: 'apiKey', apiKey: string }
-  | { auth: 'tokenPlan', token: string, baseUrl: string }
+ | { auth: 'apiKey', apiKey: string }
+ | { auth: 'tokenPlan', token: string, baseUrl: string }
 // never: { apiKey?: string, token?: string, baseUrl?: string }
 </code></pre>
 
@@ -388,25 +388,25 @@ language: ts
 severity: warning
 message: &quot;Two optionals that read as exclusive branches, use a discriminated union `| {kind: '…', ...}` instead of `{a?:, b?:}`.&quot;
 rule:
-  kind: object_type
-  has:
-    nthChild:
-      position: 2
-      ofRule:
-        kind: property_signature
-        regex: &quot;\\?:&quot;
+ kind: object_type
+ has:
+ nthChild:
+ position: 2
+ ofRule:
+ kind: property_signature
+ regex: &quot;\\?:&quot;
 </code></pre>
 
 <p>An earlier draft of that rule checked <code>has: {regex: "\\?:"}</code> directly, which
 matches on a single optional property and false-positives on every
-single-optional type — a measured 40% false-positive rate. The <code>nthChild</code>
+single-optional type. A measured 40% false-positive rate. The <code>nthChild</code>
 form only fires once a <em>second</em> optional property shows up, which is what
 actually distinguishes a suspicious bag from an ordinary optional field.</p>
 <p>Tailor this locally rather than treating it as absolute: a genuinely
 independent bag (<code>{title?: string, description?: string}</code>) should stay a
 bag, annotated <code>// ast-grep-ignore: no-optional-bag-for-exclusive-states --
-bag: independent</code> so the suppression names the belief behind it — "these are
-independent products, not a sum" — instead of silently silencing the warning.
+bag: independent</code> so the suppression names the belief behind it: "these are
+independent products, not a sum"; instead of silently silencing the warning.
 And treat the false-positive rate as a live signal: if most files in a
 codebase need that annotation, the rule is prescriptive in the wrong place,
 and the right move is demoting it back to a suggestion, or dropping it, not
@@ -423,16 +423,16 @@ rely on code that could forget to check; make the check structurally
 unavoidable.</p>
 <p>She closes with an explicit anti-overclaim that belongs in this essay as a
 caveat, not just a citation: "I do not think that fancy type system features
-are bad... just do not get caught up on it and start thinking... if your
+are bad... Just do not get caught up on it and start thinking... If your
 language doesn't have some fit for purpose feature for keeping track of
 something like this, then it's just impossible, and the type system needs to
 be improved. We need to have dependent types. That's not really true." Sum and
-product types alone don't require dependent types — the shift in perspective
+product types alone don't require dependent types, the shift in perspective
 is enough. Whether newtype-style ID wrappers or unit-typed values are worth it
-"really kind of depends on your use case and what the team happens to be" —
+"really kind of depends on your use case and what the team happens to be" , 
 ergonomics, not a mandate.</p>
 <p>Richard Hipp's asserts work for the same underlying reason types do: the
-belief being checked is sharp — "this branch was exercised at this value."
+belief being checked is sharp. "this branch was exercised at this value."
 A <code>kind: 'ok'</code> discriminant is a one-line reproduction case for the type
 checker in exactly the same way. A bag with two optional fields is the type
 system's version of an environment leak: ambient possibility that nothing
@@ -444,43 +444,43 @@ program that computes the same thing. For types, that means the comment
 <h2 id="lessons-the-hard-way">Lessons, the hard way</h2>
 <ul>
 <li><strong>"We have tests, we're lit" is a trap.</strong> A green suite without a
-  guardrail that names which belief failed is just the dark factory with
-  better lighting. Myers again: progress looks like a happy system, whether
-  or not it's a correct one.</li>
+ guardrail that names which belief failed is just the dark factory with
+ better lighting. Myers again: progress looks like a happy system, whether
+ or not it's a correct one.</li>
 <li><strong>Wiring every candidate as a hard gate is overcorrection.</strong> The ranked
-  list above is evidence-ordered candidates, not a checklist to clear.
-  All-dark collapses on exactly the timeline Horthy describes — three to six
-  months after going lights-off. All-lit collapses under review throughput
-  instead. Place each switch according to actual backpressure, not as a
-  blanket policy.</li>
+ list above is evidence-ordered candidates, not a checklist to clear.
+ All-dark collapses on exactly the timeline Horthy describes: three to six
+ months after going lights-off. All-lit collapses under review throughput
+ instead. Place each switch according to actual backpressure, not as a
+ blanket policy.</li>
 <li><strong>Encoding a convention is sometimes the wrong fix; deletion is the right
-  one.</strong> A 47-path explicit file list in a test runner's config (two named
-  files, 45 more tacked on over time) should never have been enforced as a
-  list. It should have been a glob from the start.</li>
+ one.</strong> A 47-path explicit file list in a test runner's config (two named
+ files, 45 more tacked on over time) should never have been enforced as a
+ list. It should have been a glob from the start.</li>
 <li><strong>Suppressing complexity at the exact site that introduced it is a tell.</strong>
-  I watched a cyclomatic-complexity ceiling get hit, and the suppression for
-  it land two days later. A ceiling that moves the moment it's touched isn't
-  a constraint, it's a measurement everyone's already agreed to ignore.</li>
+ I watched a cyclomatic-complexity ceiling get hit, and the suppression for
+ it land two days later. A ceiling that moves the moment it's touched isn't
+ a constraint, it's a measurement everyone's already agreed to ignore.</li>
 <li><strong>A documented bypass without a scanner isn't a rule.</strong> <code>git commit
-  --no-verify</code>, written down in a CONTRIBUTING file with no check for
-  whether anyone's actually using it, is a rule that only runs when someone
-  remembers it. That's not running at all.</li>
+ --no-verify</code>, written down in a CONTRIBUTING file with no check for
+ whether anyone's actually using it, is a rule that only runs when someone
+ remembers it. That's not running at all.</li>
 <li><strong>"Shorter" isn't the same as "correct."</strong> <code>{a?:, b?:}</code> for an
-  either/or state is shorter by one word and longer by two impossible
-  states. The type checker can't refute intent it was never told about.</li>
+ either/or state is shorter by one word and longer by two impossible
+ states. The type checker can't refute intent it was never told about.</li>
 <li><strong>Not every optional bag is a missed sum.</strong> Independent optionals are a
-  product, not a sum. If a rule meant to catch this needs a bypass
-  annotation on most of the files it touches, it's prescriptive in the
-  wrong place — demote it back to a suggestion.</li>
+ product, not a sum. If a rule meant to catch this needs a bypass
+ annotation on most of the files it touches, it's prescriptive in the
+ wrong place; demote it back to a suggestion.</li>
 <li><strong>Heuristics carry a cost profile, and that cost doesn't transfer whole.</strong>
-  Myers' heuristic and Hipp's 7,500 asserts both come from a fleet and
-  maintenance cost that looks nothing like a single-maintainer JavaScript
-  project with weekly interface churn. Use them as heuristics with a stated
-  cost attached.</li>
+ Myers' heuristic and Hipp's 7,500 asserts both come from a fleet and
+ maintenance cost that looks nothing like a single-maintainer JavaScript
+ project with weekly interface churn. Use them as heuristics with a stated
+ cost attached.</li>
 </ul>
 <h2 id="a-prototype-you-can-copy-this-week">A prototype you can copy this week</h2>
 <p>This is the roadmap the essay argues for, in the order you would actually do
-it. It is one belief, one check, one placement, and one measurement — not a
+it. It is one belief, one check, one placement, and one measurement, not a
 platform to adopt. Each step clears backpressure before the next widens the
 mouth.</p>
 <p><strong>1. Pick one belief that already bit you.</strong> Write it as one sentence that
@@ -508,8 +508,8 @@ fires only on real incidents, keep it and consider widening its scope (the
 env hermeticity assert widened from <code>env -u FOO</code> one name at a time to a
 generic <code>startsWith("TASKFERRY_")</code> after eight leaked-env failures). If it
 needs a bypass on most files it touches, demote it to a suggestion or drop it.
-If Pulumi's pattern applies — the generator can see its own acceptance
-scenarios — add the Isolation Wall (holdout scenarios the generator can't
+If Pulumi's pattern applies. The generator can see its own acceptance
+scenarios: add the Isolation Wall (holdout scenarios the generator can't
 read) before promoting anything to a hard gate. Stripe's <code>1,300+ PRs/week at
 $1T, all human-reviewed</code> is the reminder that keeping review upstream doesn't
 cap throughput the way a dark pitch assumes.</p>
@@ -520,48 +520,48 @@ that one has earned the dark on its own.</p>
 <h2 id="references">References</h2>
 <ul>
 <li>Addy Osmani, <a href="https://addyosmani.com/blog/software-factories/">"Software Factories, Light and
-  Dark"</a> (2026-07-20) —
-  loop/harness/factory, backpressure, the funnel metaphor, comprehension
-  debt, 3–10 steps / past 20 losing the thread.</li>
+ Dark"</a> (2026-07-20) , 
+ loop/harness/factory, backpressure, the funnel metaphor, comprehension
+ debt, 3–10 steps / past 20 losing the thread.</li>
 <li>Addy Osmani, <a href="https://addyo.substack.com/p/loop-engineering">"Loop
-  Engineering"</a> — five
-  components (automations, worktrees, skills, plugins, sub-agents) and
-  external memory.</li>
+ Engineering"</a>; five
+ components (automations, worktrees, skills, plugins, sub-agents) and
+ external memory.</li>
 <li>Jeff Horthy, <a href="https://youtu.be/htM02KMNZnk?t=27219">"Harness Engineering is not Enough: Why Software Factories
-  Fail"</a>, AI Engineer World's Fair —
-  training-time limitation, July 2025 lights-off, 3–6 month decay, program
-  design, "30 minutes of planning saves hours of review."</li>
+ Fail"</a>, AI Engineer World's Fair , 
+ training-time limitation, July 2025 lights-off, 3–6 month decay, program
+ design, "30 minutes of planning saves hours of review."</li>
 <li>Simon Willison, <a href="https://simonwillison.net/2026/Jan/28/the-five-levels/">"The Five Levels: from Spicy Autocomplete to the Dark
-  Factory"</a> — dark
-  as "robots don't need lights," the black-box spec-to-software framing,
-  FANUC/Xiaomi lights-out.</li>
+ Factory"</a>, dark
+ as "robots don't need lights," the black-box spec-to-software framing,
+ FANUC/Xiaomi lights-out.</li>
 <li>StrongDM, <a href="https://www.strongdm.com/blog/the-strongdm-software-factory-building-software-with-ai">"The StrongDM Software Factory: Building Software with
-  AI"</a> —
-  three engineers, Level 5, <code>return true</code> Goodhart gaming, Probabilistic
-  Satisfaction, Digital Twin Universe.</li>
+ AI"</a> , 
+ three engineers, Level 5, <code>return true</code> Goodhart gaming, Probabilistic
+ Satisfaction, Digital Twin Universe.</li>
 <li>Pulumi, <a href="https://www.pulumi.com/blog/dark-factory-pattern-pulumi-autonomous-iac">"The Dark Factory Pattern for Infrastructure
-  (IaC)"</a> —
-  Isolation Wall (generator never sees acceptance scenarios), holdout
-  scenarios, 3×/2-of-3/90% gates, destructive operations held out.</li>
-<li>Stripe, <a href="https://infoq.com/news/2026/03/stripe-autonomous-coding-agents">"Stripe's Minions"</a> —
-  1,300+ PRs/week at $1T volume, every PR human-reviewed, light-factory
-  counter-example.</li>
+ (IaC)"</a> , 
+ Isolation Wall (generator never sees acceptance scenarios), holdout
+ scenarios, 3×/2-of-3/90% gates, destructive operations held out.</li>
+<li>Stripe, <a href="https://infoq.com/news/2026/03/stripe-autonomous-coding-agents">"Stripe's Minions"</a> , 
+ 1,300+ PRs/week at $1T volume, every PR human-reviewed, light-factory
+ counter-example.</li>
 <li>Richard Hipp (SQLite), <a href="https://www.youtube.com/watch?v=V_qzqY1bb7I">"Reliability Lessons From
-  SQLite"</a>, SSW 2026 — 7,500+
-  asserts, 100% MC/DC, <code>test_case()</code> macros, fault injection, "we're not using
-  agents to write code, but we do write our own programs to write code."</li>
+ SQLite"</a>, SSW 2026. 7,500+
+ asserts, 100% MC/DC, <code>test_case()</code> macros, fault injection, "we're not using
+ agents to write code, but we do write our own programs to write code."</li>
 <li>Alexis King, <a href="https://www.youtube.com/watch?v=0BXuYlNrUmE">"The Unreasonable Effectiveness of Constructive Data
-  Modeling"</a>, SSW 2026 — three
-  prerequisites, positive space reframe, impossible-to-break vs validated
-  abstract type, anti-overclaim, distinct from "Parse, Don't Validate."</li>
-<li>Anders Hejlsberg (TypeScript) — replace a belief held in someone's head
-  with a program that computes it.</li>
-<li>Glenford Myers — progress looks like a happy system, which is not the
-  same claim as a correct one.</li>
-<li>Adam Baggs — benchmark that touches pages kills mmap 2,000× claim.</li>
+ Modeling"</a>, SSW 2026: three
+ prerequisites, positive space reframe, impossible-to-break vs validated
+ abstract type, anti-overclaim, distinct from "Parse, Don't Validate."</li>
+<li>Anders Hejlsberg (TypeScript); replace a belief held in someone's head
+ with a program that computes it.</li>
+<li>Glenford Myers, progress looks like a happy system, which is not the
+ same claim as a correct one.</li>
+<li>Adam Baggs. Benchmark that touches pages kills mmap 2,000× claim.</li>
 </ul>
 </article>
   <hr />
-  <p class="byline">Jeremy Ball · August 2026 — <a href="https://github.com/jeremysball/lighting-the-dark-factory">companion skill</a></p>
+  <p class="byline">Jeremy Ball · August 2026 · <a href="https://github.com/jeremysball/lighting-the-dark-factory">companion skill</a></p>
 </body>
 </html>
