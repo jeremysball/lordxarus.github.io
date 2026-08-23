@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lighting the Dark Factory — Jeremy Ball</title>
+  <meta name="description" content="Turning a dark software factory lit: guardrails, sum types, and where ast-grep stops and the compiler starts." />
+  <link rel="canonical" href="https://jeremyball.me/essays/lighting-the-dark-factory.html" />
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="Lighting the Dark Factory" />
+  <meta property="og:description" content="Turning a dark software factory lit: guardrails, sum types, and where ast-grep stops and the compiler starts." />
+  <meta property="og:url" content="https://jeremyball.me/essays/lighting-the-dark-factory.html" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/dark.css">
+  <style>
+    body { max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre { overflow-x: auto; }
+    nav a { margin-right: 1rem; }
+    .byline { color: #888; font-size: 0.9em; margin-bottom: 2rem; }
+  </style>
+</head>
+<body>
+  <nav><a href="/">← jeremyball.me</a></nav>
+  <article>
+<h1 id="lighting-the-dark-factory">Lighting the Dark Factory</h1>
+<!-- essay source: lighting-the-dark-factory.draft.md -->
+
+<p>A dark factory is not a metaphor for "fast." It's a physical claim borrowed
+from manufacturing: the lights are off because no human is on the floor. A
+dark software factory is the same move in code. Diffs ship that no human has
+read, verified only by other machines.</p>
+<p>The phrase "lights-off software factory" was coined by Dan Shapiro, credited
+to him by Jeff Horthy in his own talk on the subject, not by Addy Osmani or
+Horthy themselves. Horthy is the one who ran the experiment, and his
+conclusion is that it fails. His talk, <a href="https://youtu.be/htM02KMNZnk?t=27219">Harness Engineering is not Enough:
+Why Software Factories
+Fail</a>, given at the AI Engineer World's
+Fair, argues that no amount of harness or loop engineering fixes
+maintainability decay, because the model has no reinforcement signal for it:
+"there's no way in this system that we can penalize it for poor program
+design."</p>
+<p>I watched a version of that failure happen firsthand. Taskferry ran 769 green
+tests while every <code>taskferry advisor</code> dispatch under sandboxing was silently
+broken by a single flag (<code>--unshare-net</code>, blocking all outbound network). The
+dashboard was green. The team's felt progress was a green dashboard, not
+evidence that the thing we actually cared about was true. Glenford Myers put
+this more generally: "progress looks like a happy system." A happy system and
+a correct one are not the same claim, and a dark factory will hand you the
+first while quietly losing the second.</p>
+<p>The fix isn't "more tests." It's guardrails that satisfy three conditions at
+once, plus types that make the impossible state unrepresentable in the first
+place.</p>
+<h2 id="loop-harness-factory">Loop, harness, factory</h2>
+<p>Addy Osmani's stack, from his post <a href="https://addyosmani.com/blog/software-factories/">Software Factories, Light and
+Dark</a>, gives the pieces
+names:</p>
+<ul>
+<li><strong>Loop</strong>: one agent job on repeat — gather context, act, check, repeat
+  until done. The smallest unit.</li>
+<li><strong>Harness</strong>: the walls around the loop — the sandbox, which tools are
+  reachable, memory between runs, whatever defines "done."</li>
+<li><strong>Factory</strong>: many harnessed loops fed by a queue, drained through a review
+  gate into production, with humans owning the outer loop.</li>
+</ul>
+<p>A dark factory moves all judgment out of that outer loop. A lit one moves
+judgment upstream instead — into product, design, and architecture decisions
+made before the loop starts, plus review wherever a wrong answer is
+expensive.</p>
+<p>Horthy's claim isn't that balance is hard to strike. It's sharper than that:
+dark factories fail on maintainability specifically, because the cost of
+verifying it is measured in months or years, which is far too late for any
+harness or RL reward to close the loop on. In his words: "verifying code
+quality and maintainability is orders of magnitude harder than [checking]
+the code runs and the test passes." He ran his experiment lights-off starting
+July 2025; by his account the agents "struggle after maybe three to six
+months." His prescription was to turn the lights back on: "we're going to put
+code review back... you're still reading everything and you're still owning
+the code."</p>
+<p>Osmani's framing is the useful complement to that result, not a rebuttal of
+it. His post is about <em>where</em> along the pipeline a loop earns the right to
+run dark, not about whether dark factories work in general. Back pressure is
+the constraint that decides it: you can only hand a loop as much autonomy as
+you can cheaply and reliably verify, not one inch more. Verification, not
+generation, is the actual bottleneck.</p>
+<p>Comprehension debt is what accrues while you're not looking: the gap between
+how much code exists and how much any human still understands it. A dark
+factory takes on that debt as fast as it possibly can, tests green the whole
+way down.</p>
+<h2 id="what-counts-as-a-guardrail">What counts as a guardrail</h2>
+<p>Something only counts as a guardrail if it clears all three of these, not
+just one or two:</p>
+<ol>
+<li><strong>It runs without being asked.</strong> A rule someone has to remember to apply
+   is a policy, not a guardrail.</li>
+<li><strong>It has a failure mode.</strong> If no observation could ever make it fire, it's
+   decoration, not a check.</li>
+<li><strong>It names which belief was wrong.</strong> "Build failed" doesn't tell you
+   anything. "<code>--unshare-net</code> got emitted on advisor spawns, network's
+   blocked" does.</li>
+</ol>
+<h2 id="picking-the-mechanism-ast-grep-vs-the-compiler">Picking the mechanism: ast-grep vs. the compiler</h2>
+<p>These are two different guardrail mechanisms, and they're not competing for
+the same slot. Which one applies depends on whether the belief you're
+checking is syntactic or semantic.</p>
+<p><strong>Syntactic shape calls for <code>ast-grep</code>.</strong> Things like "this pattern appears
+in the code" — a bag of optional fields that reads as mutually exclusive
+branches, a banned call shape, a convention mined from a repeated fix (more
+on that below). <code>ast-grep</code> matches on the AST, not on text, so it survives
+reformatting and doesn't misfire on a comment or a string that happens to
+contain the pattern. It needs no project index, no build step, no
+long-running language server to keep alive. That statelessness is most of
+what clears the "runs without being asked" bar at near-zero cost.</p>
+<p><strong>Semantic correctness calls for the real compiler, linter, or type
+checker.</strong> "Does this actually type-check, resolve, or compile" isn't a
+pattern <code>ast-grep</code> can see — it has no symbol table and no cross-file
+resolution, no notion of what a type even is. The move here is to parse the
+output of <code>tsc</code>, <code>mypy</code>, or whatever linter the project already runs, rather
+than standing up a stateful LSP client. A live LSP session needs a correctly
+initialized project per language: dependencies installed, the right
+toolchain version, the project indexed. That's a precondition that drifts
+easily in an ephemeral or sandboxed guardrail context, which is exactly the
+kind of drift a guardrail is supposed to prevent, not reintroduce. The
+compiler you're already running in CI is the same belief-check, just invoked
+earlier and per-diff instead of per-merge.</p>
+<p>Using the wrong one produces a guardrail that fails on the "has a failure
+mode" test, and it fails in a specific, recognizable way: an <code>ast-grep</code> rule
+stretched to catch a genuinely semantic bug either never fires, because the
+shape varies too much to pin down syntactically, or it fires on false
+positives, because the shape recurs in legitimate code too. A symlink-related
+cluster I ran into (detailed below) is exactly that failure: a rule that
+would have blocked a legitimate change. Running the compiler to catch a
+purely stylistic shape is the mirror-image mistake — expensive overkill for
+a job an <code>ast-grep</code> rule does in milliseconds.</p>
+<h2 id="six-candidates-ranked-by-cost-against-evidence">Six candidates, ranked by cost against evidence</h2>
+<p>This list is ordered by cost against the evidence that justifies each one,
+not by how appealing the idea sounds. None of these is automatic, and
+picking one off the list isn't itself a decision about <em>where</em> the mechanism
+belongs — a hook, <code>CLAUDE.md</code>, the tool's own code, or nowhere at all. That
+placement question stays open until a guardrail has actually run long enough
+to have a measured false-positive rate.</p>
+<p>Before wiring any of these in, run it against two separate checks: the three
+guardrail tests above, and Osmani's threshold for what earns a loop the
+right to go dark — cheap, high-frequency, hard to fake, answers immediately,
+and doesn't drift. Fail either check and the right move is to keep it lit
+(human-reviewed), or not wire it in at all. Short loops earn the dark.
+Sprawling ones just hide mistakes in the corners.</p>
+<ol>
+<li><strong>Real-<code>bwrap</code> network assertion.</strong> Two lines in a file that already
+   spawns <code>bwrap</code>, at a measured cost of 431ms, already gated on capability.
+   This closes a hole that demonstrably shipped. A good candidate for a
+   hook, though worth re-verifying it stays cheap once wired.</li>
+<li><strong>Trailer scanner.</strong> <code>rg -c '^Claude-Session:'</code> over <code>git log</code> — 19
+   violations found the day I wrote this. Trivially mechanical, near-zero
+   false-positive risk, since the string it's matching is unambiguous. A
+   good candidate for <code>pre-commit</code>: it satisfies the "runs without being
+   asked" test cheaply.</li>
+<li><strong>Worktree gate.</strong> A twelve-line <code>pre-commit</code> check: compare
+   <code>git rev-parse --git-dir</code> against <code>git rev-parse --git-common-dir</code>, block
+   if they're equal. Verified to be equal in the primary checkout and
+   different in a linked worktree. It needs a CI escape hatch, and that
+   escape hatch is itself a knob someone has to decide about deliberately,
+   not a special case to wave through.</li>
+<li><strong>Environment hermeticity.</strong> <code>test:unit</code> must not inherit any
+   <code>TASKFERRY_*</code> variable, current or future. Widening <code>env -u FOO</code> one name
+   at a time is a fix, not a guardrail; the actual guardrail is a generic
+   assert that fails if any environment key starts with <code>TASKFERRY_</code> leaks
+   into the test. This was proved out by eight tests that failed once the
+   environment leaked. A good candidate to live inside <code>test:unit</code> itself,
+   though widening the exclusion list alone doesn't earn it the dark.</li>
+<li><strong>Asserts.</strong> SQLite is the reference case here: 7,500-plus asserts,
+   MC/DC coverage, a 4x cost that Richard Hipp says was only justified
+   because thousands of micro-optimizations aggregated into a 3x speedup.
+   Taskferry is one maintainer, in JavaScript, with weekly interface churn —
+   a very different cost profile. For that project, this stays a hypothesis
+   until at least two concrete internal invariants exist worth asserting.
+   Don't wire in a generic "add asserts" rule on the strength of Hipp's
+   number alone.</li>
+<li><strong>Fix-to-lint mining.</strong> Useful, and dangerous. This only works for
+   repeated, stable, syntactic shapes, and it needs to be validated four
+   separate ways: it has to fire on the buggy parent commit, stay silent on
+   the fix itself, stay silent on legitimate near-matches, and keep holding
+   after the next policy change. A symlink-handling cluster I found (<code>skip
+   symlink</code> becoming <code>resolve symlink</code>) failed that fourth check, and a rule
+   mined from it would have blocked a later, entirely legitimate change.
+   When the artifact itself caused the failure, prefer deleting it over
+   encoding a rule around it — a 47-path explicit test list (two named
+   files plus 45 more) should just become a glob (<code>src/**/*.test.js</code>), not
+   a lint rule that enforces the explicit list forever.</li>
+</ol>
+<h2 id="sum-and-product-types-making-impossible-states-unrepresentable">Sum and product types: making impossible states unrepresentable</h2>
+<p>Alexis King's litmus test for a type is simple: if you can say "this state
+cannot occur," a type should make it unrepresentable, not lean on a comment
+asking the reader to remember.</p>
+<p>Optional fields on a type are product-shaped when they're independent of
+each other, and sum-shaped when they're mutually exclusive. Encoding both
+shapes the same way, as <code>{a?:, b?:}</code>, conflates them, and creates two
+impossible states on a single type: neither field set, or both set at once.</p>
+<pre class="codehilite"><code class="language-ts">// BAD: mutually-exclusive optionals modeled as an optional bag
+// Allows {} and {data, error} at once, both impossible per intent
+type Result = { data?: string; error?: string }
+function handle(r: Result) {
+  if (r.data) use(r.data)          // caller must remember to check r.error too
+  if (r.error) fail(r.error)
+}
+
+// GOOD: sum type with a discriminant (Alexis King's pattern)
+type Result =
+  | { kind: 'ok', data: string }
+  | { kind: 'err', error: string }
+
+function handle(r: Result) {
+  if (r.kind === 'ok') use(r.data)  // compiler forbids reading .error here
+  else fail(r.error)                // and forbids {} and {both}
+}
+</code></pre>
+
+<p>Not every optional bag should become a sum, though. Independent fields
+should stay a product:</p>
+<pre class="codehilite"><code class="language-ts">// Product stays a product: independent fields bundle together, all required
+type Point = { x: number; y: number }
+
+// Exclusive configuration: a sum of products
+type Config =
+  | { auth: 'apiKey', apiKey: string }
+  | { auth: 'tokenPlan', token: string, baseUrl: string }
+// never: { apiKey?: string, token?: string, baseUrl?: string }
+</code></pre>
+
+<p>Here's the part that makes this more than a style preference: the compiler
+only complains once you've already written the sum. It has no way to flag
+the bag that <em>should</em> have been a sum, because nothing about <code>{a?:, b?:}</code> is
+wrong from the type checker's point of view. A mechanical check that
+surfaces "this bag has two optionals that read like exclusive branches" is
+what actually moves the convention from something you have to remember (and
+therefore fails the first guardrail test) into something that runs on its
+own.</p>
+<p>That means enforcing this well takes two layers. The type is layer one:
+always write exclusive branches as a union of <code>{kind: '…', ...}</code> shapes with
+a literal discriminant, never a bare <code>{a?:, b?:}</code> for an either/or. Requiring
+<code>kind</code> in every branch means exhaustiveness checking (<code>switch (kind)</code>) can
+prove every case is covered.</p>
+<p>The lint is layer two, flagging optional-bag shapes that likely hide a sum:</p>
+<pre class="codehilite"><code class="language-yaml"># flags type literals with two or more optional props and no discriminant
+id: no-optional-bag-for-exclusive-states
+language: ts
+severity: warning
+message: &quot;Two optionals that read as exclusive branches, use a discriminated union `| {kind: '…', ...}` instead of `{a?:, b?:}`.&quot;
+rule:
+  kind: type_literal
+  has:
+    nthChild:
+      position: 2
+      ofRule:
+        kind: property_signature
+        regex: &quot;\\?:&quot;
+</code></pre>
+
+<p>An earlier draft of that rule checked <code>has: {regex: "\\?:"}</code> directly, which
+matches on a single optional property and false-positives on every
+single-optional type — a measured 40% false-positive rate. The <code>nthChild</code>
+form only fires once a <em>second</em> optional property shows up, which is what
+actually distinguishes a suspicious bag from an ordinary optional field.</p>
+<p>Tailor this locally rather than treating it as absolute: a genuinely
+independent bag (<code>{title?: string, description?: string}</code>) should stay a
+bag, annotated <code>// bag: independent</code> so the rule can carry an explicit
+bypass that names the belief behind it — "these are independent products,
+not a sum" — instead of silently suppressing the warning. And treat the
+false-positive rate as a live signal: if most files in a codebase need that
+annotation, the rule is prescriptive in the wrong place, and the right move
+is demoting it back to a suggestion, or dropping it, not tuning it further.</p>
+<p>Richard Hipp's asserts work for the same underlying reason types do: the
+belief being checked is sharp — "this branch was exercised at this value."
+A <code>kind: 'ok'</code> discriminant is a one-line reproduction case for the type
+checker in exactly the same way. A bag with two optional fields is the type
+system's version of an environment leak: ambient possibility that nothing
+exercises until the one bad combination actually ships. Anders Hejlsberg's
+line about TypeScript's design completes the thought: the goal is to replace
+a belief the model (or the developer) is holding in their head with a
+program that computes the same thing. For types, that means the comment
+"either a or b" gets replaced by a union that the compiler checks for you.</p>
+<h2 id="lessons-the-hard-way">Lessons, the hard way</h2>
+<ul>
+<li><strong>"We have tests, we're lit" is a trap.</strong> A green suite without a
+  guardrail that names which belief failed is just the dark factory with
+  better lighting. Myers again: progress looks like a happy system, whether
+  or not it's a correct one.</li>
+<li><strong>Wiring every candidate as a hard gate is overcorrection.</strong> The ranked
+  list above is evidence-ordered candidates, not a checklist to clear.
+  All-dark collapses on exactly the timeline Horthy describes — three to six
+  months after going lights-off. All-lit collapses under review throughput
+  instead. Place each switch according to actual back pressure, not as a
+  blanket policy.</li>
+<li><strong>Encoding a convention is sometimes the wrong fix; deletion is the right
+  one.</strong> A 47-path explicit file list in a test runner's config (two named
+  files, 45 more tacked on over time) should never have been enforced as a
+  list. It should have been a glob from the start.</li>
+<li><strong>Suppressing complexity at the exact site that introduced it is a tell.</strong>
+  I watched a cyclomatic-complexity ceiling get hit, and the suppression for
+  it land two days later. A ceiling that moves the moment it's touched isn't
+  a constraint, it's a measurement everyone's already agreed to ignore.</li>
+<li><strong>A documented bypass without a scanner isn't a rule.</strong> <code>git commit
+  --no-verify</code>, written down in a CONTRIBUTING file with no check for
+  whether anyone's actually using it, is a rule that only runs when someone
+  remembers it. That's not running at all.</li>
+<li><strong>"Shorter" isn't the same as "correct."</strong> <code>{a?:, b?:}</code> for an
+  either/or state is shorter by one word and longer by two impossible
+  states. The type checker can't refute intent it was never told about.</li>
+<li><strong>Not every optional bag is a missed sum.</strong> Independent optionals are a
+  product, not a sum. If a rule meant to catch this needs a bypass
+  annotation on most of the files it touches, it's prescriptive in the
+  wrong place — demote it back to a suggestion.</li>
+<li><strong>Heuristics carry a cost profile, and that cost doesn't transfer whole.</strong>
+  Myers' heuristic and Hipp's 7,500 asserts both come from a fleet and
+  maintenance cost that looks nothing like a single-maintainer JavaScript
+  project with weekly interface churn. Use them as heuristics with a stated
+  cost attached, not as law.</li>
+</ul>
+<h2 id="references">References</h2>
+<ul>
+<li>Addy Osmani, <a href="https://addyosmani.com/blog/software-factories/">"Software Factories, Light and
+  Dark"</a> (2026-07-20) —
+  loop/harness/factory, back pressure, the funnel metaphor, comprehension
+  debt.</li>
+<li>Jeff Horthy, <a href="https://youtu.be/htM02KMNZnk?t=27219">"Harness Engineering is not Enough: Why Software Factories
+  Fail"</a>, AI Engineer World's Fair.</li>
+<li>Simon Willison, <a href="https://simonwillison.net/2026/Jan/28/the-five-levels/">"The Five Levels: from Spicy Autocomplete to the Dark
+  Factory"</a> — dark
+  as "robots don't need lights," the black-box spec-to-software framing.</li>
+<li>Richard Hipp (SQLite) — 7,500+ asserts, MC/DC coverage; an assert is what
+  makes a passing test suite mean something specific.</li>
+<li>Alexis King — make illegal states unrepresentable via sum types.</li>
+<li>Anders Hejlsberg (TypeScript) — replace a belief held in someone's head
+  with a program that computes it.</li>
+<li>Glenford Myers — progress looks like a happy system, which is not the
+  same claim as a correct one.</li>
+</ul>
+  </article>
+  <hr />
+  <p class="byline">Jeremy Ball · August 2026 — <a href="https://github.com/jeremysball/lighting-the-dark-factory">companion skill</a></p>
+</body>
+</html>
