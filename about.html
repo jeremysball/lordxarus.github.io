@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeremy Ball · Notes — Wanted</title>
-<meta name="description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
-<link rel="canonical" href="https://jeremyball.me/">
+<title>Jeremy Ball · About</title>
+<meta name="description" content="Jeremy Ball — about, contact, and links.">
+<link rel="canonical" href="https://jeremyball.me/about.html">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Jeremy Ball">
-<meta property="og:description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
-<meta property="og:url" content="https://jeremyball.me/">
+<meta property="og:title" content="Jeremy Ball · About">
+<meta property="og:description" content="Jeremy Ball — about, contact, and links.">
+<meta property="og:url" content="https://jeremyball.me/about.html">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Jeremy Ball">
-<meta name="twitter:description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
+<meta name="twitter:title" content="Jeremy Ball · About">
+<meta name="twitter:description" content="Jeremy Ball — about, contact, and links.">
 <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96">
 <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
 <link rel="shortcut icon" href="favicon/favicon.ico">
@@ -100,22 +100,6 @@
     padding:4px 8px;
     border-bottom-color:#0A0A0A;
   }
-  .masthead-links{
-    display:flex;
-    gap:14px;
-    margin-top:14px;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.06em;
-  }
-  .masthead-links a{
-    text-decoration:none;
-    border-bottom:2px solid #0A0A0A;
-    padding-bottom:2px;
-  }
-  .masthead-links a:hover{background:#0A0A0A; color:#FFFBF0}
-
-  /* board — flat kraft-like, notices are pinned individually */
   .board{
     display:grid;
     grid-template-columns:1fr 1fr;
@@ -132,13 +116,11 @@
     flex-direction:column;
     gap:10px;
   }
-  .notice:nth-child(5){grid-column:span 2; max-width:620px; margin:0 auto; width:100%}
-
+  .notice.wide{grid-column:span 2; max-width:720px; margin:0 auto; width:100%}
   .notice-date{
     font-size:11px; font-weight:700; letter-spacing:0.06em;
     color:#6B625C;
   }
-
   .notice-title{
     margin:0;
     font-size:16.5px;
@@ -155,9 +137,17 @@
     color:#1A1A1A;
   }
   .notice-desc code{font-size:12px; font-weight:700; border:2px solid #0A0A0A; padding:1px 5px; background:#FFF1DC}
+  .link-list{
+    margin:0; padding:0; list-style:none;
+    display:flex; flex-direction:column; gap:8px;
+    font-size:13px; line-height:1.5;
+  }
+  .link-list a{text-decoration:none; box-shadow:inset 0 -2px 0 #0A0A0A}
+  .link-list a:hover{background:#0A0A0A; color:#FFFBF0}
+  .link-list .dim{color:#6B625C; font-size:11px; letter-spacing:0.04em}
   @media(max-width:760px){
     .board{grid-template-columns:1fr}
-    .notice:nth-child(5){grid-column:span 1; max-width:none}
+    .notice.wide{grid-column:span 1; max-width:none}
     .masthead{padding-bottom:18px}
     .masthead-name{font-size:28px}
     .notice{box-shadow:6px 6px 0 #0A0A0A}
@@ -172,42 +162,40 @@
     <header class="masthead" aria-label="Masthead">
       <h1 class="masthead-title">
         <span class="masthead-name">Jeremy Ball</span>
-        <span class="masthead-meta" aria-label="Section: Notes">
+        <span class="masthead-meta" aria-label="Section: About">
           <span class="masthead-rule" aria-hidden="true"></span>
-          <span class="masthead-section">Notes</span>
+          <span class="masthead-section">About</span>
         </span>
       </h1>
-      <p class="sub">I write about software and small tools that keep a log over time.</p>
+      <p class="sub">Software and small systems that keep a log over time.</p>
       <nav class="site-nav" aria-label="Site">
-        <a href="/" aria-current="page">Notes</a>
-        <a href="/about.html">About</a>
+        <a href="/">Notes</a>
+        <a href="/about.html" aria-current="page">About</a>
       </nav>
     </header>
-    <section class="board" aria-label="Pinned notes">
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-08-14">2026-08-14</time></div>
-        <h2 class="notice-title"><a href="#">Portico auto-discovers services every five seconds</a></h2>
-        <p class="notice-desc">portico is a tailnet landing page that polls for new services on a fixed interval.</p>
+    <section class="board" aria-label="About">
+      <article class="notice wide">
+        <div class="notice-date">About</div>
+        <h2 class="notice-title">I'm Jeremy — I build terminal tools and background systems.</h2>
+        <p class="notice-desc">I like software that is small, explicit, and stays up. Recent work: <a href="https://github.com/jeremysball/portico">portico</a> (tailnet landing page), <a href="https://github.com/jeremysball/hearth">hearth</a> (offline baby tracker on a Pi), and a handful of CLI tools like <a href="https://github.com/lordxarus/catbow">catbow</a> and <a href="https://github.com/lordxarus/go-pair">go-pair</a>. I keep notes here when something is worth writing down. No newsletter, no tracking.</p>
       </article>
       <article class="notice">
-        <div class="notice-date"><time datetime="2026-07-29">2026-07-29</time></div>
-        <h2 class="notice-title"><a href="#">Building an offline-first baby tracker on a Pi</a></h2>
-        <p class="notice-desc">hearth is a baby tracker that works without wifi, running on a Raspberry Pi over Tailscale.</p>
+        <div class="notice-date">Contact</div>
+        <h2 class="notice-title">Reach me</h2>
+        <ul class="link-list">
+          <li><a href="mailto:jeremystevenball@gmail.com">jeremystevenball@gmail.com</a> <span class="dim">— email</span></li>
+          <li><a href="https://github.com/jeremysball">github.com/jeremysball</a> <span class="dim">— code</span></li>
+          <li><a href="https://github.com/lordxarus">github.com/lordxarus</a> <span class="dim">— older handle</span></li>
+        </ul>
       </article>
       <article class="notice">
-        <div class="notice-date"><time datetime="2026-06-18">2026-06-18</time></div>
-        <h2 class="notice-title"><a href="#">Matching taskferry's final marker across multi-paragraph messages</a></h2>
-        <p class="notice-desc">A regex anchor bug. ^ and $ need the m flag to match per line instead of only the whole string.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-05-11">2026-05-11</time></div>
-        <h2 class="notice-title"><a href="#">Alfred's memory: three layers and a daemon</a></h2>
-        <p class="notice-desc">alfred is a personal memory layer that runs as a background daemon over Telegram.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-04-03">2026-04-03</time></div>
-        <h2 class="notice-title"><a href="#">Computing catbow's color ramp with a sine wave</a></h2>
-        <p class="notice-desc">catbow is a terminal fortune/cowsay/lolcat tool. The color ramp is <code>sin(freq*offset/Spread+phase)*127+128</code> per channel, emitted as 24-bit truecolor (<code>ESC[38;2;R;G;Bm</code>), not a 256-color palette lookup.</p>
+        <div class="notice-date">Links</div>
+        <h2 class="notice-title">Elsewhere</h2>
+        <ul class="link-list">
+          <li><a href="/essays/lighting-the-dark-factory.html">Lighting the Dark Factory</a> <span class="dim">— essay</span></li>
+          <li><a href="https://github.com/lordxarus/catbow">catbow</a> <span class="dim">— 10× lolcat in Go</span></li>
+          <li><a href="https://github.com/lordxarus/yassg">yassg</a> <span class="dim">— dead-simple static site generator</span></li>
+        </ul>
       </article>
     </section>
   </div>
