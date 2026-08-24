@@ -51,30 +51,18 @@ a{color:inherit} .page{max-width:1080px;margin:0 auto;padding:32px 20px 56px}
 <div class="page">
 <header class="masthead" aria-label="Masthead">
 <h1 class="masthead-title"><span class="masthead-name">Jeremy Ball</span><span class="masthead-meta"><span class="masthead-rule" aria-hidden="true"></span><span class="masthead-section">Essay</span></span></h1>
-<p class="sub">Lighting the Dark Factory — full synthesis from seven primary sources (2026-08-23).</p>
+<p class="sub">Lighting the Dark Factory: what seven primary sources claim about AI-driven engineering, and what follows from each (2026-08-23).</p>
 <nav class="site-nav" aria-label="Site"><a href="/">Notes</a><a href="/about.html">About</a><a href="/essays/lighting-the-dark-factory.html" aria-current="page">Essay</a><a href="https://github.com/jeremysball" target="_blank" rel="noopener">GitHub</a></nav>
 </header>
 <article class="essay">
-<div class="meta">2026-08-23 · essay · 7 sources · supersedes prior drafts</div>
-<h1>Lighting the Dark Factory: Full Synthesis and Application</h1>
+<div class="meta">2026-08-23 · seven primary sources</div>
+<h1>Lighting the Dark Factory</h1>
 <h2>What this is</h2>
-<p>A single document walking through everything the research pass surfaced:
-all seven primary sources, what each one claims (not a secondhand
-gloss of it), and what each claim implies for how I run AI-driven
-engineering work day to day. This supersedes trying to treat the research
-as skill-drafting material. It&rsquo;s a standalone reference now.</p>
-<p>Two documents already exist alongside this one and aren&rsquo;t duplicated here:</p>
-<ul>
-<li><code>research-dark-factories-primary-sources.md</code>: the raw per-source
-  research with line-number citations into the saved transcripts. Go there
-  when I need to verify a specific claim against the quote itself.</li>
-<li><code>synthesis.md</code>: an earlier, narrower synthesis written specifically to
-  correct sourcing errors in the (now-abandoned) skill draft and score six
-  taskferry-specific guardrail candidates. Its taskferry-specific content
-  (the three-test guardrail gate, the candidate triage table, the
-  <code>no-optional-bag-for-exclusive-states</code> lint gap) still stands and is
-  referenced below rather than repeated.</li>
-</ul>
+<p>Seven primary sources on AI-driven engineering: what each one claims,
+not a secondhand paraphrase of it, and what that claim means for how I run
+this kind of work day to day. Each source links to the original talk or
+post, so you can check a quote against the thing itself instead of taking
+my word for it.</p>
 <h2>The seven sources, at a glance</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -88,52 +76,52 @@ as skill-drafting material. It&rsquo;s a standalone reference now.</p>
 <tbody>
 <tr>
 <td>1</td>
-<td>Dex Horthy (HumanLayer)</td>
+<td><a href="https://www.youtube.com/watch?v=Ib5GBkD555M">Dex Horthy (HumanLayer)</a></td>
 <td>talk + essay</td>
 <td>Coding models are RL-trained against tests that resolve in seconds; architecture quality resolves in months, so nothing trains models to preserve it. Dark factories fail on that specific axis.</td>
 </tr>
 <tr>
 <td>2</td>
-<td>Addy Osmani</td>
+<td><a href="https://addyo.substack.com/p/software-factories-light-and-dark">Addy Osmani</a></td>
 <td>essays (Substack)</td>
 <td>Loop → Harness → Factory is a maturity ladder. &ldquo;Comprehension debt&rdquo; grows faster than review capacity. Automating a check requires it be cheap, binary, immediate, and short-loop.</td>
 </tr>
 <tr>
 <td>3</td>
-<td>StrongDM</td>
+<td><a href="https://www.strongdm.com/blog/the-strongdm-software-factory-building-software-with-ai">StrongDM</a></td>
 <td>case study/manifesto</td>
 <td>A production dark factory, three engineers, roughly $3k/day. Their own agents gamed the acceptance checks by writing <code>return true</code>.</td>
 </tr>
 <tr>
 <td>4</td>
-<td>Pulumi</td>
+<td><a href="https://www.pulumi.com/blog/dark-factory-pattern-pulumi-autonomous-iac/">Pulumi</a></td>
 <td>case study/blog</td>
 <td>The structural fix for #3&rsquo;s failure mode: the generator must never see its own acceptance scenarios. A separate evaluator does.</td>
 </tr>
 <tr>
 <td>5</td>
-<td>Stripe (Minions)</td>
+<td><a href="https://www.infoq.com/news/2026/03/stripe-autonomous-coding-agents/">Stripe (Minions)</a></td>
 <td>case study</td>
 <td>1,300+ PRs/week, zero human-written code, but every PR still human-reviewed. Proof that staying &ldquo;light&rdquo; doesn&rsquo;t cap throughput as hard as the pitch assumes.</td>
 </tr>
 <tr>
 <td>6</td>
-<td>D. Richard Hipp (SQLite)</td>
+<td><a href="https://www.youtube.com/watch?v=V_qzqY1bb7I">D. Richard Hipp (SQLite)</a></td>
 <td>talk</td>
 <td>Not about AI at all. SQLite is hand-authored, no agents. Shows what verification discipline (100% MC/DC, fault injection) costs when correctness matters this much.</td>
 </tr>
 <tr>
 <td>7</td>
-<td>Alexis King</td>
+<td><a href="https://www.youtube.com/watch?v=0BXuYlNrUmE">Alexis King</a></td>
 <td>talk</td>
 <td>Sum/product types plus exhaustive matching make an invariant structurally impossible to violate, versus merely checked and hoped for. Explicitly warns against overclaiming what type systems alone buy.</td>
 </tr>
 </tbody>
 </table></div>
 <h2>1. Dex Horthy: the central negative result</h2>
-<p><strong>What he argues</strong>, quoted from the transcript
-(<code>transcripts/humanlayer/Ib5GBkD555M-harness-engineering-is-not-enough.md</code>),
-not paraphrased:</p>
+<p><strong>What he argues</strong>, quoted directly from
+<a href="https://www.youtube.com/watch?v=Ib5GBkD555M">his talk</a>, not
+paraphrased:</p>
 <blockquote>
 <p>&ldquo;there&rsquo;s no way in this system that we can penalize it for poor program
 design or for eroding the maintainability of our systems&rdquo;</p>
@@ -192,13 +180,13 @@ own coinage rather than paraphrase:</p>
   factory.&rdquo;</li>
 </ul>
 <p><strong>Application.</strong> This is the practical filter to run any candidate
-guardrail through before wiring it in. It&rsquo;s the same shape as the
-three-test gate <code>synthesis.md</code> already derived independently (runs
-unasked, has a failure mode, names which belief was wrong). Osmani&rsquo;s
-four-part test adds the cost axis that gate doesn&rsquo;t state explicitly
+guardrail through before wiring it in. It matches a three-part test I&rsquo;d
+already landed on independently for taskferry: does it run unasked, does
+it have a failure mode, does it name which belief was wrong. Osmani&rsquo;s
+four-part test adds the cost axis that test doesn&rsquo;t state explicitly
 (cheap and short-loop), which matters because a check can pass all three
-guardrail tests and still be too expensive to run on every commit. Use
-both: the three-test gate decides whether something is a guardrail at
+guardrail questions and still be too expensive to run on every commit. Use
+both: the three-part test decides whether something is a guardrail at
 all; Osmani&rsquo;s fourth axis decides whether it&rsquo;s cheap enough to wire in
 versus something to run only in CI or nightly.</p>
 <h2>3. StrongDM: the incident that makes Goodhart&rsquo;s Law concrete</h2>
@@ -273,14 +261,15 @@ framings before assuming &ldquo;dark&rdquo; is the only way to get throughput.
 It may be that a well-scoped, cheap review step plus narrow-task
 automation gets most of the value at much lower risk.</p>
 <h2>6. D. Richard Hipp: the ceiling reference</h2>
-<p>Not about AI agents. Explicitly not: <em>&ldquo;we&rsquo;re not using agents to write
-code, but we do write our own programs to write code.&rdquo;</em> SQLite: roughly 3
-committers, hand-authored C, 50-year design lifespan, no AI generation
-anywhere in the pipeline. Included in this research anyway because it
-answers a question none of the AI-specific sources do: what does maximal
-verification discipline cost, in a domain where the stakes
-(avionics-derived certification heritage, watch/embedded-class
-deployment) demand it?</p>
+<p>Not about AI agents. He says so directly in
+<a href="https://www.youtube.com/watch?v=V_qzqY1bb7I">his talk</a>:
+<em>&ldquo;we&rsquo;re not using agents to write code, but we do write our own
+programs to write code.&rdquo;</em> SQLite: roughly 3 committers, hand-authored
+C, 50-year design lifespan, no AI generation anywhere in the pipeline.
+Included here anyway because it answers a question none of the
+AI-specific sources do: what does maximal verification discipline cost, in
+a domain where the stakes (avionics-derived certification heritage,
+watch/embedded-class deployment) demand it?</p>
 <ul>
 <li><strong>100% MC/DC coverage</strong> (Modified Condition/Decision Coverage, from
   DO-178B, the avionics certification standard). Not line or branch
@@ -306,12 +295,13 @@ verification looks like when correctness is load-bearing for human
 safety. Worth a gut check whenever a pipeline&rsquo;s guardrail set gets called
 &ldquo;thorough&rdquo;: thorough compared to what baseline.</p>
 <h2>7. Alexis King: structural invariants, and the caveat against overclaiming them</h2>
-<p>The prerequisite for the whole technique, stated precisely: a language
-needs product types (structs/tuples/records), sum types (enums, unions,
-sealed interfaces, &ldquo;different variants&rdquo;), and exhaustive case analysis
-where the compiler flags an uncovered variant. Her claim: with just those
-three, no fancier type-system machinery (dependent types, refinement
-types) is required to get most of the benefit.</p>
+<p>The prerequisite for the whole technique, stated precisely in
+<a href="https://www.youtube.com/watch?v=0BXuYlNrUmE">her talk</a>: a
+language needs product types (structs/tuples/records), sum types (enums,
+unions, sealed interfaces, &ldquo;different variants&rdquo;), and exhaustive case
+analysis where the compiler flags an uncovered variant. Her claim: with
+just those three, no fancier type-system machinery (dependent types,
+refinement types) is required to get most of the benefit.</p>
 <p><strong>The core reframe.</strong> Most programmers default to thinking of types as
 restricting a universe of values. King&rsquo;s alternative: a <code>class</code>/<code>record</code>
 definition in most typed languages doesn&rsquo;t restrict, it introduces new
@@ -327,17 +317,17 @@ path can build the bad value at all): <em>&ldquo;it is impossible to break the
 invariant&hellip; there is no sort of blessed code that has to worry about
 it.&rdquo;</em> She&rsquo;s explicit these get conflated in practice and that the second
 is a strictly stronger property, not a stylistic variant of the first.</p>
-<p><strong>Her own caveat, worth preserving exactly</strong>, since it heads off the
-skill draft&rsquo;s original overreach: <em>&ldquo;I do not think that fancy type system
-features are bad&hellip; just do not get caught up on it and start thinking&hellip;
-if your language doesn&rsquo;t have some fit for purpose feature for keeping
-track of something like this, then it&rsquo;s just impossible, and the type
-system needs to be improved. We need to have dependent types. That&rsquo;s not
-really true.&rdquo;</em></p>
+<p><strong>Her own caveat, worth preserving exactly</strong>, since it&rsquo;s the guard
+against overclaiming what type systems alone buy: <em>&ldquo;I do not think that
+fancy type system features are bad&hellip; just do not get caught up on it and
+start thinking&hellip; if your language doesn&rsquo;t have some fit for purpose
+feature for keeping track of something like this, then it&rsquo;s just
+impossible, and the type system needs to be improved. We need to have
+dependent types. That&rsquo;s not really true.&rdquo;</em></p>
 <p><strong>Application.</strong> Two things. First, the <code>{data?: string, error?:
-string}</code>-style optional-bag anti-pattern (independently identified in
-<code>synthesis.md</code> against taskferry&rsquo;s own code) is exactly the &ldquo;checked
-constructor, not structural&rdquo; failure mode King describes. Nothing stops a
+string}</code>-style optional-bag anti-pattern (which I&rsquo;d flagged independently
+against taskferry&rsquo;s own code before finding King&rsquo;s talk) is exactly the
+&ldquo;checked constructor, not structural&rdquo; failure mode King describes. Nothing stops a
 future caller from constructing <code>{}</code> or <code>{data, error}</code> simultaneously,
 both invalid per intent, because the invariant lives in a convention, not
 a type. A discriminated union (<code>{kind: 'ok', data} | {kind: 'err',
@@ -385,8 +375,9 @@ restating the sources:</p>
 <ul>
 <li><strong>Before wiring in any new automated check</strong>, run it through both
   gates. Osmani&rsquo;s four-part test (cheap, binary, immediate, short-loop)
-  decides whether it&rsquo;s affordable to automate; the three-test guardrail
-  gate (<code>synthesis.md</code>) decides whether it&rsquo;s a guardrail or decoration.
+  decides whether it&rsquo;s affordable to automate; the three-part guardrail
+  test (does it run unasked, does it have a failure mode, does it name
+  which belief was wrong) decides whether it&rsquo;s a guardrail or decoration.
   Failing either means it stays a human-reviewed step, not an automated
   gate.</li>
 <li><strong>Whenever a check&rsquo;s target (an agent, a contributor under deadline
@@ -426,9 +417,9 @@ restating the sources:</p>
   Pulumi) on comparable work. The comparison is qualitative across
   different companies and problem domains, not a controlled measurement.</li>
 <li>Hipp&rsquo;s three-way split of &ldquo;tested&rdquo; (test cases correct, source code
-  correct, and a third category the read transcript excerpt didn&rsquo;t fully
-  resolve) is worth a longer pull from the transcript if this ceiling
-  reference gets used more heavily later.</li>
+  correct, and a third category his talk doesn&rsquo;t fully spell out in the
+  section I&rsquo;ve reviewed) is worth another watch if this ceiling reference
+  gets used more heavily later.</li>
 </ul>
 </article>
 </div>
