@@ -58,11 +58,15 @@ a{color:inherit} .page{max-width:1080px;margin:0 auto;padding:32px 20px 56px}
 <div class="meta">2026-08-23 · seven primary sources</div>
 <h1>Lighting the Dark Factory</h1>
 <h2>What this is</h2>
-<p>Seven primary sources on AI-driven engineering: what each one claims,
-not a secondhand paraphrase of it, and what that claim means for how I run
-this kind of work day to day. Each source links to the original talk or
-post, so you can check a quote against the thing itself instead of taking
-my word for it.</p>
+<p>A &ldquo;dark factory&rdquo; is manufacturing shorthand for a factory automated
+enough to run with the lights off, nobody on the floor. Applied to
+software, it means a delivery pipeline where one AI agent writes the code,
+another reviews and merges it, and no human looks at a diff before it
+ships. Seven primary sources on whether that&rsquo;s actually a good idea: what
+each one claims, not a secondhand paraphrase of it, and what that claim
+means for how I run this kind of work day to day. Each source links to the
+original talk or post, so you can check a quote against the thing itself
+instead of taking my word for it.</p>
 <h2>The seven sources, at a glance</h2>
 <div class="table-wrap"><table>
 <thead>
@@ -119,7 +123,9 @@ my word for it.</p>
 </tbody>
 </table></div>
 <h2>1. Dex Horthy: the central negative result</h2>
-<p><strong>What he argues</strong>, quoted directly from
+<p>Dex Horthy is the founder of HumanLayer, a startup building reliability
+tooling for AI coding agents; before that he spent seven years at the
+dev-tools startup Replicated. <strong>What he argues</strong>, quoted directly from
 <a href="https://www.youtube.com/watch?v=Ib5GBkD555M">his talk</a>, not
 paraphrased:</p>
 <blockquote>
@@ -168,8 +174,8 @@ Outline, Plan) and three execution phases (Work Tree, Implement, PR).
 Research now runs before the agent sees the feature ticket, so it
 produces a factual record of the codebase rather than an opinion about
 it.</p>
-<p><strong>Application.</strong> This is the load-bearing source for the whole essay.
-It&rsquo;s the only one making a falsifiable claim about <em>why</em> a category
+<p><strong>Application.</strong> Everything else below builds on top of this claim.
+It&rsquo;s the only one of the seven making a falsifiable claim about <em>why</em> a category
 of check (architectural/maintainability quality) can&rsquo;t currently be
 automated, rather than merely observing that some checks are hard to
 write. Every other source either supplies a mechanism for extending what
@@ -186,8 +192,10 @@ QRSPI formalizes exactly this: Design Discussion and Structure Outline are
 now two of its own named alignment phases, not left as advice folded into
 a single &ldquo;architecture&rdquo; step.</p>
 <h2>2. Addy Osmani: the vocabulary and the automation-readiness test</h2>
-<p>Three terms worth using verbatim going forward, now confirmed as his
-own coinage rather than paraphrase:</p>
+<p>Addy Osmani is a director at Google Cloud AI; before that he spent over
+a decade leading Chrome&rsquo;s developer-experience team. Three terms of his
+worth using verbatim going forward, now confirmed as his own coinage
+rather than paraphrase:</p>
 <ul>
 <li><strong>Loop → Harness → Factory.</strong> A loop is one person iterating with a
   model. A harness wraps a loop with structure (tests, lint, types) so it
@@ -204,9 +212,9 @@ own coinage rather than paraphrase:</p>
   to diagnose). &ldquo;Verification, not generation, is the real constraint on a
   factory.&rdquo;</li>
 </ul>
-<p><strong>Application.</strong> This is the practical filter to run any candidate
-guardrail through before wiring it in. It matches a three-part test I&rsquo;d
-already landed on independently for taskferry: does it run unasked, does
+<p><strong>Application.</strong> Run any candidate guardrail through this before
+wiring it in. It matches a three-part test I&rsquo;d already been using
+independently in my own agent-dispatch pipeline: does it run unasked, does
 it have a failure mode, does it name which belief was wrong. Osmani&rsquo;s
 four-part test adds the cost axis that test doesn&rsquo;t state explicitly
 (cheap and short-loop), which matters because a check can pass all three
@@ -215,13 +223,17 @@ both: the three-part test decides whether something is a guardrail at
 all; Osmani&rsquo;s fourth axis decides whether it&rsquo;s cheap enough to wire in
 versus something to run only in CI or nightly.</p>
 <h2>3. StrongDM: the incident that makes Goodhart&rsquo;s Law concrete</h2>
-<p>A production system, three engineers, started 2025-07-14, published
-2026-02-06, running at roughly $3,000/day. Their guardrail architecture:
+<p>StrongDM sells infrastructure access management: software that
+controls and audits who can reach which server, database, or cloud
+account, and for how long. In 2025 they turned three of their own
+engineers into what they call a production dark factory: started
+2025-07-14, published the results 2026-02-06, running at roughly
+$3,000/day. Their guardrail architecture:
 a Digital Twin Universe (behavioral clones of third-party services for
 cheap high-volume validation), Probabilistic Satisfaction (fraction of
 successful scenario trajectories against a threshold, not a boolean),
 scenario holdouts kept outside the agent-readable codebase, specs as code.</p>
-<p><strong>The incident that matters most for this whole research pass:</strong> their
+<p><strong>The incident:</strong> their
 own agents discovered they could pass the Probabilistic Satisfaction
 scenario checks by writing a function that just <code>return true</code>s. Not a
 hypothetical adversarial-AI scenario. An agent, cooperating in good faith
@@ -229,13 +241,16 @@ on a routine task, found the shortest path through a mechanical check and
 took it. The check measured pass rate; the agent optimized pass rate;
 nothing in the check distinguished &ldquo;actually works&rdquo; from &ldquo;reports
 working.&rdquo;</p>
-<p><strong>Application.</strong> This is the concrete, sourced version of the abstract
-worry &ldquo;what if the agent games the check.&rdquo; Worth keeping as the reference
-incident whenever a new automated check is proposed, because it&rsquo;s evidence
-the failure mode is real and occurs without any adversarial intent. It
-also directly motivates source #4, which is the structural fix.</p>
+<p><strong>Application.</strong> Keep this as the reference incident whenever a new
+automated check is proposed: it&rsquo;s evidence the failure mode is real and
+happens without any adversarial intent, not just an abstract worry about
+agents gaming checks. It also directly motivates the fix in the next
+section.</p>
 <h2>4. Pulumi: the Isolation Wall, the sharpest guardrail principle here</h2>
-<p>Pulumi&rsquo;s own summary of the fix for exactly StrongDM&rsquo;s failure mode:</p>
+<p>Pulumi is an infrastructure-as-code company: its product lets you
+define and provision cloud infrastructure in a real programming language
+instead of a declarative config file. Their own summary of the fix for
+exactly StrongDM&rsquo;s failure mode:</p>
 <blockquote>
 <p>&ldquo;The generator never sees the acceptance scenarios. A separate evaluator
 does.&rdquo;</p>
@@ -245,12 +260,12 @@ a 2-of-3 threshold plus a 90% overall pass-rate gate, a list of
 permanently-excluded destructive operations the agent can&rsquo;t take
 regardless of what a check says, and a phased rollout gated on a measured
 false-positive rate below 5% before trusting the gate further.</p>
-<p><strong>Application.</strong> This generalizes past AI agents. A <code>return true</code>
-shortcut is possible any time the thing being checked can see or infer
-what the checker is looking for. Same reason a held-out test set beats a
-training-set-only metric in any ML pipeline, and the same reason code
-review is more honest when the reviewer wasn&rsquo;t the author. Two concrete
-applications:</p>
+<p><strong>Application.</strong> The same shortcut is possible any time the thing
+being checked can see or infer what the checker is looking for, with or
+without an AI agent involved: it&rsquo;s the same reason a held-out test set
+beats a training-set-only metric in any ML pipeline, and the same reason
+code review is more honest when the reviewer wasn&rsquo;t the author. Two
+concrete applications:</p>
 <ul>
 <li><strong>Any new automated check should be built so the thing it&rsquo;s checking
   can&rsquo;t read or infer the check itself.</strong> If an agent (or a human under
@@ -269,24 +284,27 @@ applications:</p>
   however careless, can produce the bad state at all.</li>
 </ul>
 <h2>5. Stripe Minions: the counter-example worth keeping in view</h2>
-<p>1,300+ PRs/week (up from 1,000), supporting $1T in annual payment volume,
+<p>Minions is Stripe&rsquo;s name for its own fleet of AI coding agents.
+1,300+ PRs/week (up from 1,000), supporting $1T in annual payment volume,
 zero human-written code in that pipeline. But <strong>every single PR is still
 human-reviewed.</strong> Stripe deliberately stayed at &ldquo;Level 2-3&rdquo; autonomy
 rather than going fully dark. Guardrail stack ahead of that review: CI/CD,
 automated tests, static analysis, engineering-standards checks. Minions
 are scoped to well-bounded tasks (config changes, dependency bumps, small
 refactors), not architecture-level autonomy.</p>
-<p><strong>Application.</strong> The useful thing this source does is puncture an
-unstated assumption the &ldquo;dark factory&rdquo; framing invites: that staying
-&ldquo;light&rdquo; (keeping a human review step) necessarily caps throughput hard.
-Stripe&rsquo;s number says otherwise. Review didn&rsquo;t become the bottleneck at
+<p><strong>Application.</strong> Stripe punctures an unstated assumption the &ldquo;dark
+factory&rdquo; framing invites: that staying &ldquo;light&rdquo; (keeping a human review
+step) necessarily caps throughput hard. Their number says otherwise.
+Review didn&rsquo;t become the bottleneck at
 their scale; generation-then-review scaled to 1,300+/week without needing
 to go dark. Worth weighing against Horthy&rsquo;s and StrongDM&rsquo;s more dramatic
 framings before assuming &ldquo;dark&rdquo; is the only way to get throughput.
 It may be that a well-scoped, cheap review step plus narrow-task
 automation gets most of the value at much lower risk.</p>
 <h2>6. D. Richard Hipp: the ceiling reference</h2>
-<p>Not about AI agents. He says so directly in
+<p>D. Richard Hipp created SQLite, the embedded database that ships
+inside nearly every phone, browser, and desktop OS, and still leads its
+development today. Not about AI agents. He says so directly in
 <a href="https://www.youtube.com/watch?v=V_qzqY1bb7I">his talk</a>:
 <em>&ldquo;we&rsquo;re not using agents to write code, but we do write our own
 programs to write code.&rdquo;</em> SQLite: roughly 3 committers, hand-authored
@@ -313,14 +331,17 @@ watch/embedded-class deployment) demand it?</p>
   tests happen to hit them.</li>
 </ul>
 <p><strong>Application.</strong> This is a ceiling, not a target. Most work doesn&rsquo;t need
-100% MC/DC and most teams couldn&rsquo;t sustain it. Its value here is
+100% MC/DC and most teams couldn&rsquo;t sustain it. Its value is
 calibration: the &ldquo;green CI&rdquo; bar that AI-generated-code pipelines
 (StrongDM, Stripe, Pulumi) treat as sufficient is far short of what
 verification looks like when correctness is load-bearing for human
 safety. Worth a gut check whenever a pipeline&rsquo;s guardrail set gets called
 &ldquo;thorough&rdquo;: thorough compared to what baseline.</p>
 <h2>7. Alexis King: structural invariants, and the caveat against overclaiming them</h2>
-<p>The prerequisite for the whole technique, stated precisely in
+<p>Alexis King is a compiler engineer working on GHC, the primary Haskell
+compiler, at the research company Tweag, and a well-known voice in the
+Haskell and Racket communities under the handle lexi-lambda. The
+prerequisite for the whole technique, stated precisely in
 <a href="https://www.youtube.com/watch?v=0BXuYlNrUmE">her talk</a>: a
 language needs product types (structs/tuples/records), sum types (enums,
 unions, sealed interfaces, &ldquo;different variants&rdquo;), and exhaustive case
@@ -349,9 +370,10 @@ start thinking&hellip; if your language doesn&rsquo;t have some fit for purpose
 feature for keeping track of something like this, then it&rsquo;s just
 impossible, and the type system needs to be improved. We need to have
 dependent types. That&rsquo;s not really true.&rdquo;</em></p>
-<p><strong>Application.</strong> Two things. First, the <code>{data?: string, error?:
-string}</code>-style optional-bag anti-pattern (which I&rsquo;d flagged independently
-against taskferry&rsquo;s own code before finding King&rsquo;s talk) is exactly the
+<p><strong>Application.</strong> Two places this shows up in practice. First, the
+<code>{data?: string, error?: string}</code>-style optional-bag anti-pattern
+(which I&rsquo;d flagged independently in my own code before finding King&rsquo;s
+talk) is exactly the
 &ldquo;checked constructor, not structural&rdquo; failure mode King describes. Nothing stops a
 future caller from constructing <code>{}</code> or <code>{data, error}</code> simultaneously,
 both invalid per intent, because the invariant lives in a convention, not
@@ -395,7 +417,7 @@ converge anyway.</p>
    either.</li>
 </ol>
 <h2>Deterministic over agent-judged, and where it stops working</h2>
-<p>Every source in this piece is a variation on one question: should a check
+<p>Every source above is a variation on one question: should a check
 live inside the loop a model or a contributor can reason about, or outside
 it? The instinct to answer &ldquo;push it outside whenever possible&rdquo; is a good
 one, but it&rsquo;s worth stating as its own claim rather than leaving it
@@ -484,9 +506,9 @@ restating the sources:</p>
   Pulumi) on comparable work. The comparison is qualitative across
   different companies and problem domains, not a controlled measurement.</li>
 <li>Hipp&rsquo;s three-way split of &ldquo;tested&rdquo; (test cases correct, source code
-  correct, and a third category his talk doesn&rsquo;t fully spell out in the
-  section I&rsquo;ve reviewed) is worth another watch if this ceiling reference
-  gets used more heavily later.</li>
+  correct, and a third category his talk doesn&rsquo;t fully spell out) is
+  worth revisiting if this ceiling reference gets used more heavily
+  later.</li>
 </ul>
 </article>
 </div>
