@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Jeremy Ball · Notes — Wanted</title>
-<meta name="description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
+<title>Jeremy Ball · Notes</title>
+<meta name="description" content="Jeremy Ball — notes on software, verification, and small systems that keep a log.">
 <link rel="canonical" href="https://jeremyball.me/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Jeremy Ball">
-<meta property="og:description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
+<meta property="og:description" content="Notes on software, verification, and small systems that keep a log.">
 <meta property="og:url" content="https://jeremyball.me/">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Jeremy Ball">
-<meta name="twitter:description" content="Jeremy Ball's personal site: software projects including Go PAIR, YTMusic CLI, Catbow, and Yet Another Static Site Generator.">
+<meta name="twitter:description" content="Notes on software, verification, and small systems.">
 <link rel="icon" type="image/png" href="favicon/favicon-96x96.png" sizes="96x96">
 <link rel="icon" type="image/svg+xml" href="favicon/favicon.svg">
 <link rel="shortcut icon" href="favicon/favicon.ico">
@@ -20,196 +20,66 @@
 <meta name="apple-mobile-web-app-title" content="JBSite">
 <link rel="manifest" href="favicon/site.webmanifest">
 <style>
-  *{box-sizing:border-box}
-  html{-webkit-font-smoothing:antialiased}
-  body{
-    margin:0;
-    background:#F2E8D5;
-    color:#0A0A0A;
-    font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace;
-    line-height:1.6;
-  }
-  a{color:inherit}
-  .page{max-width:1080px; margin:0 auto; padding:32px 20px 56px}
-  /* masthead — typographic lockup, no card. Left anchor + rule, depth 0 */
-  .masthead{
-    max-width:1080px;
-    margin:0 0 28px;
-    padding:0 0 20px;
-    border-bottom:4px solid #0A0A0A;
-    text-align:left;
-  }
-  .masthead-title{
-    margin:0;
-    display:flex;
-    flex-direction:column;
-    align-items:flex-start;
-    gap:6px;
-    line-height:1;
-  }
-  .masthead-name{
-    font-size:34px;
-    font-weight:800;
-    letter-spacing:-0.04em;
-    line-height:1;
-  }
-  .masthead-meta{
-    display:flex;
-    align-items:center;
-    gap:10px;
-  }
-  .masthead-rule{
-    width:28px;
-    height:3px;
-    background:#0A0A0A;
-    flex-shrink:0;
-  }
-  .masthead-section{
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.16em;
-    text-transform:uppercase;
-    color:#6B625C;
-    line-height:1;
-  }
-  .masthead .sub{
-    margin:14px 0 0 0;
-    font-size:13px;
-    line-height:1.6;
-    max-width:48ch;
-    color:#2B2B2B;
-  }
-  .site-nav{
-    display:flex;
-    gap:18px;
-    margin-top:18px;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-  }
-  .site-nav a{
-    text-decoration:none;
-    padding:4px 0;
-    border-bottom:2px solid transparent;
-  }
-  .site-nav a:hover{border-bottom-color:#0A0A0A}
-  .site-nav a[aria-current="page"]{
-    background:#0A0A0A;
-    color:#FFFBF0;
-    padding:4px 8px;
-    border-bottom-color:#0A0A0A;
-  }
-  .masthead-links{
-    display:flex;
-    gap:14px;
-    margin-top:14px;
-    font-size:11px;
-    font-weight:700;
-    letter-spacing:0.06em;
-  }
-  .masthead-links a{
-    text-decoration:none;
-    border-bottom:2px solid #0A0A0A;
-    padding-bottom:2px;
-  }
-  .masthead-links a:hover{background:#0A0A0A; color:#FFFBF0}
-
-  /* board — flat kraft-like, notices are pinned individually */
-  .board{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:24px;
-    align-items:start;
-  }
-  .notice{
-    border:4px solid #0A0A0A;
-    background:#FFFBF0;
-    box-shadow:8px 8px 0 #0A0A0A;
-    padding:22px 18px 16px;
-    position:relative;
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-  }
-  .notice:nth-child(5){grid-column:span 2; max-width:620px; margin:0 auto; width:100%}
-
-  .notice-date{
-    font-size:11px; font-weight:700; letter-spacing:0.06em;
-    color:#6B625C;
-  }
-
-  .notice-title{
-    margin:0;
-    font-size:16.5px;
-    font-weight:800;
-    line-height:1.3;
-    letter-spacing:-0.02em;
-  }
-  .notice-title a{text-decoration:none; box-shadow:inset 0 -3px 0 #0A0A0A}
-  .notice-title a:hover{background:#0A0A0A; color:#FFFBF0}
-  .notice-desc{
-    margin:0;
-    font-size:13px;
-    line-height:1.6;
-    color:#1A1A1A;
-  }
-  .notice-desc code{font-size:12px; font-weight:700; border:2px solid #0A0A0A; padding:1px 5px; background:#FFF1DC}
-  @media(max-width:760px){
-    .board{grid-template-columns:1fr}
-    .notice:nth-child(5){grid-column:span 1; max-width:none}
-    .masthead{padding-bottom:18px}
-    .masthead-name{font-size:28px}
-    .notice{box-shadow:6px 6px 0 #0A0A0A}
-  }
-  @media(prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation:none !important; transition-duration:0.01ms !important; scroll-behavior:auto !important}
-  }
+* {box-sizing:border-box} html{-webkit-font-smoothing:antialiased}
+body{margin:0;background:#F2E8D5;color:#0A0A0A;font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace;line-height:1.6}
+a{color:inherit}
+.page{max-width:1080px;margin:0 auto;padding:32px 20px 56px}
+.masthead{max-width:1080px;margin:0 0 28px;padding:0 0 20px;border-bottom:4px solid #0A0A0A;text-align:left}
+.masthead-title{margin:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px;line-height:1}
+.masthead-name{font-size:34px;font-weight:800;letter-spacing:-0.04em;line-height:1}
+.masthead-meta{display:flex;align-items:center;gap:10px}
+.masthead-rule{width:28px;height:3px;background:#0A0A0A;flex-shrink:0}
+.masthead-section{font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:#6B625C;line-height:1}
+.masthead .sub{margin:14px 0 0 0;font-size:13px;line-height:1.65;max-width:62ch;color:#2B2B2B}
+.site-nav{display:flex;gap:18px;margin-top:18px;font-size:11px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase}
+.site-nav a{text-decoration:none;padding:4px 0;border-bottom:2px solid transparent}
+.site-nav a:hover{border-bottom-color:#0A0A0A}
+.site-nav a[aria-current="page"]{background:#0A0A0A;color:#FFFBF0;padding:4px 8px;border-bottom-color:#0A0A0A}
+.board{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.notice{border:4px solid #0A0A0A;background:#FFFBF0;box-shadow:8px 8px 0 #0A0A0A;padding:22px 18px 16px;position:relative;display:flex;flex-direction:column;gap:10px}
+.notice.wide{grid-column:span 2;max-width:720px;margin:0 auto;width:100%}
+.notice.featured{border-width:4px}
+.notice-date{font-size:11px;font-weight:700;letter-spacing:0.06em;color:#6B625C}
+.notice-title{margin:0;font-size:16.5px;font-weight:800;line-height:1.3;letter-spacing:-0.02em}
+.notice-title a{text-decoration:none;box-shadow:inset 0 -3px 0 #0A0A0A}
+.notice-title a:hover{background:#0A0A0A;color:#FFFBF0}
+.notice-desc{margin:0;font-size:13px;line-height:1.65;color:#1A1A1A}
+.notice-desc code{font-size:12px;font-weight:700;border:2px solid #0A0A0A;padding:1px 5px;background:#FFF1DC}
+.tag{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:#FFFBF0;background:#0A0A0A;padding:2px 6px;align-self:flex-start}
+@media(max-width:760px){.board{grid-template-columns:1fr}.notice.wide{grid-column:span 1;max-width:none}.masthead{padding-bottom:18px}.masthead-name{font-size:28px}.notice{box-shadow:6px 6px 0 #0A0A0A}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:0.01ms!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
-  <div class="page">
-    <header class="masthead" aria-label="Masthead">
-      <h1 class="masthead-title">
-        <span class="masthead-name">Jeremy Ball</span>
-        <span class="masthead-meta" aria-label="Section: Notes">
-          <span class="masthead-rule" aria-hidden="true"></span>
-          <span class="masthead-section">Notes</span>
-        </span>
-      </h1>
-      <p class="sub">Lorem ipsum dolor sit amet, consectetur adipiscing elit sed do eiusmod.</p>
-      <nav class="site-nav" aria-label="Site">
-        <a href="/" aria-current="page">Notes</a>
-        <a href="/about.html">About</a>
-      </nav>
-    </header>
-    <section class="board" aria-label="Pinned notes">
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-08-14">2026-08-14</time></div>
-        <h2 class="notice-title"><a href="#">Lorem ipsum dolor sit amet</a></h2>
-        <p class="notice-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-07-29">2026-07-29</time></div>
-        <h2 class="notice-title"><a href="#">Consectetur adipiscing elit</a></h2>
-        <p class="notice-desc">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-06-18">2026-06-18</time></div>
-        <h2 class="notice-title"><a href="#">Sed do eiusmod tempor incididunt</a></h2>
-        <p class="notice-desc">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-05-11">2026-05-11</time></div>
-        <h2 class="notice-title"><a href="#">Ut labore et dolore magna</a></h2>
-        <p class="notice-desc">Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-      </article>
-      <article class="notice">
-        <div class="notice-date"><time datetime="2026-04-03">2026-04-03</time></div>
-        <h2 class="notice-title"><a href="#">Incididunt ut labore et dolore</a></h2>
-        <p class="notice-desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor <code>lorem ipsum</code> incididunt ut labore et dolore magna aliqua.</p>
-      </article>
-    </section>
-  </div>
+<div class="page">
+<header class="masthead" aria-label="Masthead">
+<h1 class="masthead-title"><span class="masthead-name">Jeremy Ball</span><span class="masthead-meta" aria-label="Section: Notes"><span class="masthead-rule" aria-hidden="true"></span><span class="masthead-section">Notes</span></span></h1>
+<p class="sub">Notes on software, verification, and small systems that keep a log. No newsletter, no tracking.</p>
+<nav class="site-nav" aria-label="Site">
+<a href="/" aria-current="page">Notes</a>
+<a href="/about.html">About</a>
+<a href="/essays/lighting-the-dark-factory.html">Essay</a>
+<a href="https://github.com/jeremysball" target="_blank" rel="noopener">GitHub</a>
+</nav>
+</header>
+<section class="board" aria-label="Pinned notes">
+<article class="notice wide featured">
+<span class="tag">essay · 2026-08-23</span>
+<div class="notice-date"><time datetime="2026-08-23">2026-08-23</time> · 7 primary sources</div>
+<h2 class="notice-title"><a href="/essays/lighting-the-dark-factory.html">Lighting the Dark Factory: Full Synthesis and Application</a></h2>
+<p class="notice-desc">Seven sources, one thread. Dex Horthy on why architecture has no RL signal, Osmani’s Loop→Harness→Factory and comprehension debt, StrongDM’s <code>return true</code> incident, Pulumi’s Isolation Wall, Stripe’s 1,300 human-reviewed PRs/week, Hipp’s MC/DC ceiling, King’s structural invariants. Distilled to guardrails that are cheap, binary, immediate, and hard to route around.</p>
+</article>
+<article class="notice">
+<div class="notice-date">About</div>
+<h2 class="notice-title"><a href="/about.html">How I work</a></h2>
+<p class="notice-desc">Allocators, state machines, control loops, the diff that makes a TUI not redraw the whole screen. Ship working first, then clean it up. More on the About page →</p>
+</article>
+<article class="notice">
+<div class="notice-date">Contact</div>
+<h2 class="notice-title">Reach me</h2>
+<p class="notice-desc"><a href="mailto:jeremystevenball@gmail.com">jeremystevenball@gmail.com</a><br><a href="https://github.com/jeremysball">github.com/jeremysball</a></p>
+</article>
+</section>
+</div>
 </body>
 </html>
