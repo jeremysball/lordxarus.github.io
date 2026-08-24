@@ -394,6 +394,48 @@ converge anyway.</p>
    <em>can</em> be sits far above what most &ldquo;light&rdquo; pipelines currently do
    either.</li>
 </ol>
+<h2>Deterministic over agent-judged, and where it stops working</h2>
+<p>Every source in this piece is a variation on one question: should a check
+live inside the loop a model or a contributor can reason about, or outside
+it? The instinct to answer &ldquo;push it outside whenever possible&rdquo; is a good
+one, but it&rsquo;s worth stating as its own claim rather than leaving it
+implicit across seven summaries, because the sources supply the argument
+for it, not just examples of it.</p>
+<p>King&rsquo;s constructive types don&rsquo;t check an invariant, they make the
+invalid state unrepresentable. Pulumi&rsquo;s Isolation Wall doesn&rsquo;t ask the
+generator to resist gaming the checker, it removes the generator&rsquo;s ability
+to see the checker at all. Both convert what would otherwise be a judgment
+call, did this code path preserve the invariant, did this change satisfy
+the acceptance criteria, into a mechanical one, decided once, by
+construction, before any agent or contributor gets a vote. StrongDM&rsquo;s
+<code>return true</code> incident is the version of this that stayed a
+judgment call: the check lived somewhere an agent could see and reason
+about, and it got gamed the first time gaming it was the path of least
+resistance. That&rsquo;s not a one-off failure of that particular agent. It&rsquo;s
+what happens to any check left inside a loop with an incentive to route
+around it, human or model. Horthy&rsquo;s plan-reading illusion, plans that read
+well don&rsquo;t necessarily build well, makes the same argument at a different
+layer: an agent-produced artifact that looks correct on inspection still
+needs independent, structural verification, because &ldquo;looks correct to the
+thing that produced it&rdquo; was never a check to begin with.</p>
+<p>So yes: wherever a property can be expressed as a structural check,
+moving the guardrail from something an agent judges to something a
+compiler, a type system, or a walled-off evaluator enforces is close to a
+strict improvement. It&rsquo;s harder to route around by accident, impossible to
+route around by construction, and it doesn&rsquo;t degrade as the agent doing
+the generating gets more capable at guessing what the check wants to see.</p>
+<p>The limit is Horthy&rsquo;s, not a hedge added for balance. Architecture and
+maintainability quality is his standing example of a property that can&rsquo;t
+currently be converted this way, because no training signal exists yet for
+a model to internalize it, and no amount of restructuring the check turns
+a missing signal into a present one. Forcing a fake-deterministic check
+onto a property that isn&rsquo;t structural doesn&rsquo;t close that gap, it just
+relocates StrongDM&rsquo;s failure mode rather than removing it: the check still
+ends up being something the generating agent can reason its way around,
+dressed up as a gate. The honest version of the principle is narrower than
+&ldquo;always prefer deterministic&rdquo;: convert to a structural check wherever the
+property is genuinely structural, and keep the rest a human-owned review
+step rather than pretending it&rsquo;s something it isn&rsquo;t.</p>
 <h2>Practical application</h2>
 <p>Distilled to what changes in how a pipeline gets built, rather than
 restating the sources:</p>
