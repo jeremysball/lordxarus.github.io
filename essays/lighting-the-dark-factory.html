@@ -146,8 +146,27 @@ skipped:</p>
 model can just cook. Um but we often look into the types and the method
 signatures, the program layout and the call stacks.&rdquo;</p>
 </blockquote>
-<p><strong>Application.</strong> This is the load-bearing source for the whole research
-pass. It&rsquo;s the only one making a falsifiable claim about <em>why</em> a category
+<p>He has since revised this prescription. At a later talk,
+<a href="https://www.humanlayer.dev/qrspi">&ldquo;Everything We Got Wrong About
+RPI&rdquo;</a> (AIE Miami, April 2026; no public transcript exists, so the
+breakdown below follows
+<a href="https://alexlavaee.me/blog/from-rpi-to-qrspi/">a practitioner&rsquo;s
+writeup of the talk</a>), he named three concrete ways the three-phase
+version broke at scale. Past roughly 150-200 instructions a model&rsquo;s
+compliance degrades, and the system prompt above had grown past 85, so the
+model started silently skipping constraints buried deep in the list, with
+no error to signal it. The workflow only worked if the user knew to add
+specific phrasing, which he now calls a defect in the tool rather than a
+usage tip: &ldquo;if a tool requires magic words for basic functionality, the
+tool itself is broken.&rdquo; And a plan that reads well can still be wrong
+about the codebase, because &ldquo;plans that read well don&rsquo;t necessarily build
+well.&rdquo; His fix splits three phases into eight: five alignment phases
+(Questions, Research, Design Discussion, Structure Outline, Plan) and
+three execution phases (Work Tree, Implement, PR). Research now runs
+before the agent sees the feature ticket, so it produces a factual record
+of the codebase rather than an opinion about it.</p>
+<p><strong>Application.</strong> This is the load-bearing source for the whole essay.
+It&rsquo;s the only one making a falsifiable claim about <em>why</em> a category
 of check (architectural/maintainability quality) can&rsquo;t currently be
 automated, rather than merely observing that some checks are hard to
 write. Every other source either supplies a mechanism for extending what
@@ -159,7 +178,10 @@ evidence a refactor didn&rsquo;t erode the architecture. That&rsquo;s the gap hi
 training-signal argument says can&rsquo;t close mechanically. Program design
 (types, call graph, module boundaries stated before generation starts) is
 the missing rung worth deliberately adding as its own step, not folded
-into &ldquo;architecture&rdquo; or skipped in favor of &ldquo;just start generating.&rdquo;</p>
+into &ldquo;architecture&rdquo; or skipped in favor of &ldquo;just start generating.&rdquo;
+QRSPI formalizes exactly this: Design Discussion and Structure Outline are
+now two of its own named alignment phases, not left as advice folded into
+a single &ldquo;architecture&rdquo; step.</p>
 <h2>2. Addy Osmani: the vocabulary and the automation-readiness test</h2>
 <p>Three terms worth using verbatim going forward, now confirmed as his
 own coinage rather than paraphrase:</p>
