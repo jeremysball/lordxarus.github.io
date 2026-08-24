@@ -137,34 +137,37 @@ downstream (months, not seconds) for any single commit to carry the blame
 or credit. He ran the experiment directly: full lights-off at HumanLayer
 starting July 2025, broke on exactly this axis within a few months, not on
 raw capability.</p>
-<p>His prescription for turning the lights back on is four front-loaded
-planning phases: Product Review, System Architecture, <strong>Program Design</strong>,
-Vertical Slices. The third one is the layer he says is systematically
+<p>The prescription above sits inside his RPI methodology (Research, Plan,
+Implement): research the codebase, produce a plan, implement against it.
+The four gates just quoted, Product Review, System Architecture,
+<strong>Program Design</strong>, Vertical Slices, are how he structures RPI&rsquo;s
+Plan phase. The third gate is the layer he says is systematically
 skipped:</p>
 <blockquote>
 <p>&ldquo;I think people assume that once you get the architecture right, the
 model can just cook. Um but we often look into the types and the method
 signatures, the program layout and the call stacks.&rdquo;</p>
 </blockquote>
-<p>He has since revised this prescription. At a later talk,
+<p>He has since revised RPI itself. At a later talk,
 <a href="https://www.humanlayer.dev/qrspi">&ldquo;Everything We Got Wrong About
 RPI&rdquo;</a> (AIE Miami, April 2026; no public transcript exists, so the
 breakdown below follows
 <a href="https://alexlavaee.me/blog/from-rpi-to-qrspi/">a practitioner&rsquo;s
-writeup of the talk</a>), he named three concrete ways the three-phase
-version broke at scale. Past roughly 150-200 instructions a model&rsquo;s
-compliance degrades, and the system prompt above had grown past 85, so the
-model started silently skipping constraints buried deep in the list, with
-no error to signal it. The workflow only worked if the user knew to add
-specific phrasing, which he now calls a defect in the tool rather than a
-usage tip: &ldquo;if a tool requires magic words for basic functionality, the
-tool itself is broken.&rdquo; And a plan that reads well can still be wrong
-about the codebase, because &ldquo;plans that read well don&rsquo;t necessarily build
-well.&rdquo; His fix splits three phases into eight: five alignment phases
-(Questions, Research, Design Discussion, Structure Outline, Plan) and
-three execution phases (Work Tree, Implement, PR). Research now runs
-before the agent sees the feature ticket, so it produces a factual record
-of the codebase rather than an opinion about it.</p>
+writeup of the talk</a>), he named three concrete ways RPI broke at scale.
+Past roughly 150-200 instructions a model&rsquo;s compliance degrades, and
+RPI&rsquo;s system prompt had grown past 85, so the model started silently
+skipping constraints buried deep in the list, with no error to signal it.
+The workflow only worked if the user knew to add specific phrasing, which
+he now calls a defect in the tool rather than a usage tip: &ldquo;if a tool
+requires magic words for basic functionality, the tool itself is
+broken.&rdquo; And a plan that reads well can still be wrong about the
+codebase, because &ldquo;plans that read well don&rsquo;t necessarily build well.&rdquo;
+His fix splits RPI&rsquo;s three phases into eight, and he renamed the
+resulting workflow QRSPI: five alignment phases (Questions, Research, Design Discussion, Structure
+Outline, Plan) and three execution phases (Work Tree, Implement, PR).
+Research now runs before the agent sees the feature ticket, so it
+produces a factual record of the codebase rather than an opinion about
+it.</p>
 <p><strong>Application.</strong> This is the load-bearing source for the whole essay.
 It&rsquo;s the only one making a falsifiable claim about <em>why</em> a category
 of check (architectural/maintainability quality) can&rsquo;t currently be
