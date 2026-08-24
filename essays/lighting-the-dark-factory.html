@@ -39,7 +39,8 @@ a{color:inherit} .page{max-width:1080px;margin:0 auto;padding:32px 20px 56px}
 .essay table{width:100%;border-collapse:collapse;margin:16px 0;font-size:11.5px;line-height:1.5} .essay th,.essay td{border:1px solid #0A0A0A;padding:7px 8px;text-align:left;vertical-align:top} .essay th{background:#0A0A0A;color:#FFFBF0;font-weight:700;font-size:10.5px;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap} .essay td{background:#FFFBF0}
 @media(max-width:760px){.essay table{font-size:11px} .essay th,.essay td{padding:6px 6px}}
 .essay th:nth-child(4),.essay td:nth-child(4){min-width:260px;width:48%} .essay th:nth-child(1),.essay td:nth-child(1){width:28px;text-align:center} .essay th:nth-child(3),.essay td:nth-child(3){white-space:nowrap}
-.essay code{font-size:12px;font-weight:700;border:2px solid #0A0A0A;padding:1px 4px;background:#FFF1DC} .essay pre{background:#0A0A0A;color:#FFFBF0;padding:12px;overflow:auto;font-size:12px;line-height:1.5} .essay pre code{background:transparent;border:none;color:inherit;padding:0}
+.essay code{font-size:12px;font-weight:700;border:2px solid #0A0A0A;padding:1px 4px;background:#FFF1DC;overflow-wrap:anywhere;word-break:break-word;box-decoration-break:clone;-webkit-box-decoration-break:clone} .essay pre{background:#0A0A0A;color:#FFFBF0;padding:12px;overflow:auto;font-size:12px;line-height:1.5} .essay pre code{background:transparent;border:none;color:inherit;padding:0;box-decoration-break:slice;-webkit-box-decoration-break:slice}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:16px -4px;padding:0 4px}
 .essay a{text-decoration:none;box-shadow:inset 0 -2px 0 #0A0A0A} .essay a:hover{background:#0A0A0A;color:#FFFBF0}
 .meta{font-size:11px;font-weight:700;letter-spacing:0.06em;color:#6B625C;margin-bottom:16px}
 @media(max-width:760px){.masthead-name{font-size:28px} .essay{box-shadow:6px 6px 0 #0A0A0A;padding:20px 16px} }
@@ -75,7 +76,7 @@ as skill-drafting material. It&rsquo;s a standalone reference now.</p>
   referenced below rather than repeated.</li>
 </ul>
 <h2>The seven sources, at a glance</h2>
-<table>
+<div class="table-wrap"><table>
 <thead>
 <tr>
 <th>#</th>
@@ -128,7 +129,7 @@ as skill-drafting material. It&rsquo;s a standalone reference now.</p>
 <td>Sum/product types plus exhaustive matching make an invariant structurally impossible to violate, versus merely checked and hoped for. Explicitly warns against overclaiming what type systems alone buy.</td>
 </tr>
 </tbody>
-</table>
+</table></div>
 <h2>1. Dex Horthy: the central negative result</h2>
 <p><strong>What he argues</strong>, quoted from the transcript
 (<code>transcripts/humanlayer/Ib5GBkD555M-harness-engineering-is-not-enough.md</code>),
